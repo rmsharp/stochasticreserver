@@ -2,6 +2,51 @@ url: https://rmsharp.github.io/stochasticreserver/
 
 template:
   bootstrap: 5
+  includes:
+    in_header: |
+      <style>
+      .code-fold-btn {
+        cursor: pointer;
+        padding: 0.25em 0.5em;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        margin-bottom: 0.5em;
+        font-size: 0.85em;
+        display: inline-block;
+      }
+      .code-fold-btn:hover {
+        background-color: #e9ecef;
+      }
+      .sourceCode.hidden {
+        display: none;
+      }
+      </style>
+    after_body: |
+      <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var codeBlocks = document.querySelectorAll('div.sourceCode');
+        codeBlocks.forEach(function(block) {
+          var btn = document.createElement('button');
+          btn.className = 'code-fold-btn';
+          btn.innerHTML = '&#9654; Show Code';
+          btn.onclick = function() {
+            if (block.classList.contains('hidden')) {
+              block.classList.remove('hidden');
+              btn.innerHTML = '&#9660; Hide Code';
+            } else {
+              block.classList.add('hidden');
+              btn.innerHTML = '&#9654; Show Code';
+            }
+          };
+          block.classList.add('hidden');
+          block.parentNode.insertBefore(btn, block);
+        });
+      });
+      </script>
+
+code:
+  width: 80
 
 navbar:
   structure:
