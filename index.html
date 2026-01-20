@@ -13,6 +13,24 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Flexible Framework for Stochastic Reserving Models">
 <meta name="description" content="Maximum likelihood estimators provide a powerful statistical tool. This package directly deals with non-linear reserving models, without the need to transform those models to make them tractable for linear or generalized linear methods. The same general approach can be easily adapted to provide estimates for a very wide range of reserving methods and models, making use of the same framework, and even much of the same computer code. The package focuses on the triangle of incremental average costs, and shows how five common methods can be set in a stochastic framework.">
 <meta property="og:description" content="Maximum likelihood estimators provide a powerful statistical tool. This package directly deals with non-linear reserving models, without the need to transform those models to make them tractable for linear or generalized linear methods. The same general approach can be easily adapted to provide estimates for a very wide range of reserving methods and models, making use of the same framework, and even much of the same computer code. The package focuses on the triangle of incremental average costs, and shows how five common methods can be set in a stochastic framework.">
+<style>
+.code-fold-btn {
+  cursor: pointer;
+  padding: 0.25em 0.5em;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5em;
+  font-size: 0.85em;
+  display: inline-block;
+}
+.code-fold-btn:hover {
+  background-color: #e9ecef;
+}
+.sourceCode.hidden {
+  display: none;
+}
+</style>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -138,7 +156,26 @@
 
 
 
-
-
-  </body>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  var codeBlocks = document.querySelectorAll('div.sourceCode');
+  codeBlocks.forEach(function(block) {
+    var btn = document.createElement('button');
+    btn.className = 'code-fold-btn';
+    btn.innerHTML = '&#9654; Show Code';
+    btn.onclick = function() {
+      if (block.classList.contains('hidden')) {
+        block.classList.remove('hidden');
+        btn.innerHTML = '&#9660; Hide Code';
+      } else {
+        block.classList.add('hidden');
+        btn.innerHTML = '&#9654; Show Code';
+      }
+    };
+    block.classList.add('hidden');
+    block.parentNode.insertBefore(btn, block);
+  });
+});
+</script>
+</body>
 </html>

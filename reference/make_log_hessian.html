@@ -13,7 +13,24 @@ hessian-of-objective-function"><meta property="og:description" content="-   m_ex
 paralleling the gradient of g.
 -   The variables _m are copies of the originals to shape
 c(npar,npar,size,size), paralleling the hessian of g
-hessian-of-objective-function"></head><body>
+hessian-of-objective-function"><style>
+.code-fold-btn {
+  cursor: pointer;
+  padding: 0.25em 0.5em;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5em;
+  font-size: 0.85em;
+  display: inline-block;
+}
+.code-fold-btn:hover {
+  background-color: #e9ecef;
+}
+.sourceCode.hidden {
+  display: none;
+}
+</style></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -114,7 +131,25 @@ denominator</p></dd>
 
 
 
-
-
-  </body></html>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  var codeBlocks = document.querySelectorAll('div.sourceCode');
+  codeBlocks.forEach(function(block) {
+    var btn = document.createElement('button');
+    btn.className = 'code-fold-btn';
+    btn.innerHTML = '&#9654; Show Code';
+    btn.onclick = function() {
+      if (block.classList.contains('hidden')) {
+        block.classList.remove('hidden');
+        btn.innerHTML = '&#9660; Hide Code';
+      } else {
+        block.classList.add('hidden');
+        btn.innerHTML = '&#9654; Show Code';
+      }
+    };
+    block.classList.add('hidden');
+    block.parentNode.insertBefore(btn, block);
+  });
+});
+</script></body></html>
 
