@@ -1,0 +1,874 @@
+---
+title: "Comprehensive Tutorial: Stochastic Reserving Models"
+author: "R. Mark Sharp"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Comprehensive Tutorial: Stochastic Reserving Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+## Introduction
+
+This tutorial demonstrates all five stochastic reserving models implemented in
+the `stochasticreserver` package:
+1. **Chain Ladder** - Standard development factor approach
+2. **Cape Cod** (Bornhuetter-Ferguson variant) - Exposure-based method
+3. **Berquist-Sherman** - Incremental severity method with trend
+4. **Hoerl Curve** - Smooth curve with shared operational time parameters
+5. **Wright** - Generalized Hoerl with individual accident year levels
+
+These methods are based on Roger Hayne's paper "A Flexible Framework for
+Stochastic Reserving Models" published in *Variance* journal. The key insight
+is that all five methods can be unified under a common maximum likelihood
+estimation framework, enabling consistent uncertainty quantification.
+
+### Mathematical Framework
+
+All models share a common likelihood structure. For incremental averages
+$A_{ij}$, we assume:
+
+$$A_{ij} \sim N(\mu_{ij}, \sigma^2_{ij})$$
+
+where the variance depends on the expected value:
+
+$$\sigma^2_{ij} = e^{\kappa - w_i} \cdot (\mu_{ij}^2)^p$$
+
+Here $\kappa$ is a proportionality constant, $w_i = \log(d_i)$ where $d_i$ is
+the exposure count for accident year $i$, and $p$ is a power parameter
+controlling how variance scales with the mean.
+
+```{r load-packages}
+library(stochasticreserver)
+library(mvtnorm)
+library(abind)
+library(stats)
+```
+
+## Data
+
+### Package Data: Hayne's Example Triangle
+
+The package includes data from the reference paper - a 10x10 development
+triangle of cumulative averages (`B0`) and exposure counts (`dnom`).
+
+```{r load-data}
+# Load the cumulative average triangle
+B0 <- stochasticreserver::B0
+dnom <- stochasticreserver::dnom
+size <- nrow(B0)
+
+# Display the triangle
+cat("Cumulative Average Triangle (B0):\n")
+print(round(B0, 2))
+
+cat("\nExposure Counts (dnom):\n")
+print(round(dnom, 0))
+```
+
+### Data Preparation
+
+We need to prepare several derived quantities for the models:
+
+```{r data-prep}
+# Calculate incremental average matrix (A0)
+A0 <- cbind(B0[, 1], B0[, 2:size] - B0[, 1:(size - 1)])
+
+# Generate log exposure matrix for variance structure
+logd <- log(matrix(dnom, size, size))
+
+# Create row and column index matrices
+rowNum <- row(A0)
+colNum <- col(A0)
+
+# Create masks for data availability
+# upper_triangle_mask: TRUE for cells with available data
+upper_triangle_mask <- (size - rowNum) >= colNum - 1
+
+# msn: mask for next forecast diagonal (one-period ahead)
+msn <- (size - rowNum) == colNum - 2
+
+# msd: mask for current diagonal (paid to date)
+msd <- (size - rowNum) == colNum - 1
+
+# Calculate amount paid to date for each accident year
+paid_to_date <- rowSums(B0 * msd, na.rm = TRUE)
+
+cat("Paid to Date by Accident Year:\n")
+print(round(paid_to_date, 2))
+```
+
+### Simulated Data: Auto Liability Example
+
+To demonstrate the models on different data characteristics, we also create a
+simulated dataset representing a stylized auto liability triangle. This
+simulated data exhibits:
+- Moderate development over 10 periods
+- Slight trend in accident year severity
+- Realistic exposure variation
+
+**Note:** This data is simulated. For production use, replace with actual
+public data such as triangles from regulatory filings or industry studies.
+
+```{r simulate-data}
+set.seed(42)
+
+# Simulate a second triangle with different characteristics
+simulate_triangle <- function(n_years = 10, base_ult = 5000, trend = 0.03,
+                              dev_pattern = NULL) {
+  if (is.null(dev_pattern)) {
+    # Typical auto liability development pattern
+    dev_pattern <- c(0.35, 0.25, 0.15, 0.10, 0.06, 0.04, 0.025, 0.015,
+                     0.008, 0.002)
+    dev_pattern <- dev_pattern / sum(dev_pattern)  # Normalize
+  }
+
+  n_dev <- length(dev_pattern)
+
+  # Generate ultimates with trend
+  ultimates <- base_ult * (1 + trend)^(0:(n_years - 1))
+  ultimates <- ultimates * exp(rnorm(n_years, 0, 0.05))  # Add noise
+
+  # Generate incremental averages
+  incr_avg <- matrix(NA, n_years, n_dev)
+  for (i in 1:n_years) {
+    for (j in 1:n_dev) {
+      if ((n_years - i) >= (j - 1)) {
+        mu <- ultimates[i] * dev_pattern[j]
+        sigma <- mu * 0.1  # 10% coefficient of variation
+        incr_avg[i, j] <- rnorm(1, mu, sigma)
+      }
+    }
+  }
+
+  # Convert to cumulative
+  cum_avg <- t(apply(incr_avg, 1, cumsum))
+
+  # Generate exposures (claim counts)
+  exposures <- round(runif(n_years, 35000, 50000))
+
+  list(
+    B0 = cum_avg,
+    A0 = incr_avg,
+    dnom = exposures,
+    ultimates = ultimates
+  )
+}
+
+sim_data <- simulate_triangle()
+B0_sim <- sim_data$B0
+A0_sim <- sim_data$A0
+dnom_sim <- sim_data$dnom
+
+cat("Simulated Cumulative Triangle:\n")
+print(round(B0_sim, 2))
+```
+
+## Helper Functions
+
+We define helper functions to streamline the analysis across all models.
+
+```{r helper-functions}
+#' Fit a stochastic reserving model
+#'
+#' @param model_name Character: "Chain", "CapeCod", "Berquist", "Hoerl",
+#'   or "Wright"
+#' @param B0 Cumulative average matrix
+#' @param A0 Incremental average matrix
+#' @param dnom Exposure vector
+#' @param paid_to_date Paid amounts to date
+#' @param upper_triangle_mask Logical mask for available data
+#' @return List with fitted model results
+fit_model <- function(model_name, B0, A0, dnom, paid_to_date,
+                      upper_triangle_mask) {
+
+  size <- nrow(B0)
+  logd <- log(matrix(dnom, size, size))
+
+  # Select model
+  model_lst <- switch(model_name,
+    "Chain" = chain(B0, paid_to_date, upper_triangle_mask),
+    "CapeCod" = capecod(B0, paid_to_date, upper_triangle_mask),
+    "Berquist" = berquist(B0, paid_to_date, upper_triangle_mask),
+    "Hoerl" = hoerl(B0, paid_to_date, upper_triangle_mask),
+    "Wright" = wright(B0, paid_to_date, upper_triangle_mask)
+  )
+
+  g_obj <- model_lst$g_obj
+  g_grad <- model_lst$g_grad
+  g_hess <- model_lst$g_hess
+  a0 <- model_lst$a0
+
+  # Get starting values for kappa and p
+  E <- g_obj(a0)
+  yyy <- (A0 - E)^2
+  yyy <- logd + log(((yyy != 0) * yyy) - (yyy == 0))
+  sss <- na.omit(data.frame(x = c(log(E^2)), y = c(yyy)))
+  if (nrow(sss) > 2) {
+    ttt <- array(coef(lm(sss$y ~ sss$x)))[1:2]
+  } else {
+    ttt <- c(10, 1)
+  }
+  a0 <- c(a0, ttt)
+
+  # Objective functions
+  l.obj <- function(a, A) {
+    make_negative_log_likelihood(a, A, dnom, g_obj)
+  }
+
+  l.grad <- function(a, A) {
+    make_gradient_of_objective(a, A, dnom, g_obj, g_grad)
+  }
+
+  l.hess <- function(a, A) {
+    make_log_hessian(a, A, dnom, g_obj, g_grad, g_hess)
+  }
+
+  # Minimize
+  max_ctrl <- list(iter.max = 10000, eval.max = 10000)
+  scale_vec <- abs(1 / (2 * ((a0 * (a0 != 0)) + (1 * (a0 == 0)))))
+
+  mle <- tryCatch(
+    nlminb(a0, l.obj, gradient = l.grad, hessian = l.hess,
+           scale = scale_vec, A = A0, control = max_ctrl),
+    error = function(e) {
+      # Fallback without hessian
+      nlminb(a0, l.obj, gradient = l.grad,
+             scale = scale_vec, A = A0, control = max_ctrl)
+    }
+  )
+
+  # Extract results
+  npar <- length(mle$par) - 2
+  p <- mle$par[npar + 2]
+  mean_fitted <- g_obj(mle$par[1:npar])
+  var_fitted <- exp(-outer(logd[, 1], rep(mle$par[npar + 1], size), "-")) *
+    (mean_fitted^2)^p
+  stres <- (A0 - mean_fitted) / sqrt(var_fitted)
+
+  # Information matrix and variance-covariance
+  hess_final <- l.hess(mle$par, A0)
+  inf_mat <- tryCatch(
+    solve(hess_final),
+    error = function(e) NULL
+  )
+
+  list(
+    model_name = model_name,
+    mle = mle,
+    npar = npar,
+    mean = mean_fitted,
+    var = var_fitted,
+    stres = stres,
+    g_obj = g_obj,
+    vcov = inf_mat,
+    logd = logd,
+    convergence = mle$convergence
+  )
+}
+
+#' Calculate forecast reserves
+#'
+#' @param fit Fitted model object
+#' @param dnom Exposure vector
+#' @param upper_triangle_mask Mask for available data
+#' @return Data frame with reserve estimates
+calculate_reserves <- function(fit, dnom, upper_triangle_mask) {
+  size <- nrow(fit$mean)
+
+  # Forecast for lower triangle (future payments)
+  forecast_mask <- !upper_triangle_mask
+  forecast_mean <- fit$mean * forecast_mask
+  forecast_var <- fit$var * forecast_mask
+
+  # Total reserve by accident year
+  reserve_mean <- rowSums(dnom * forecast_mean, na.rm = TRUE)
+  reserve_sd <- sqrt(rowSums(dnom^2 * forecast_var, na.rm = TRUE))
+
+  # Aggregate
+  total_mean <- sum(reserve_mean)
+  total_sd <- sqrt(sum(dnom^2 * forecast_var, na.rm = TRUE))
+
+  data.frame(
+    accident_year = c(1:size, "Total"),
+    reserve_mean = c(reserve_mean, total_mean),
+    reserve_sd = c(reserve_sd, total_sd),
+    cv = c(reserve_sd / pmax(reserve_mean, 1), total_sd / total_mean)
+  )
+}
+
+#' Run Monte Carlo simulation
+#'
+#' @param fit Fitted model object
+#' @param dnom Exposure vector
+#' @param upper_triangle_mask Mask for available data
+#' @param nsim Number of simulations
+#' @return Matrix of simulated reserves
+run_simulation <- function(fit, dnom, upper_triangle_mask, nsim = 5000) {
+  if (is.null(fit$vcov)) return(NULL)
+
+  size <- nrow(fit$mean)
+  npar <- fit$npar
+
+  # Masks for simulation
+  smsk <- aperm(array(c(upper_triangle_mask), c(size, size, nsim)),
+                c(3, 1, 2))
+
+  # Sample parameters
+  spar <- tryCatch(
+    rmvnorm(nsim, fit$mle$par, fit$vcov),
+    error = function(e) NULL
+  )
+  if (is.null(spar)) return(NULL)
+
+  # Simulated means
+  esim <- fit$g_obj(spar)
+
+  # Simulated variances
+  ksim <- exp(aperm(outer(array(spar[, npar + 1], c(nsim, size)),
+                          log(dnom), "-"), c(1, 3, 2)))
+  psim <- array(spar[, npar + 2], c(nsim, size, size))
+  vsim <- ksim * (esim^2)^psim
+
+  # Simulate future averages
+  sim_avg <- array(rnorm(nsim * size * size, c(esim), sqrt(c(vsim))),
+                   c(nsim, size, size))
+
+  # Calculate reserves
+  sdnm <- t(matrix(dnom, size, nsim))
+  reserves <- sdnm * rowSums(sim_avg * !smsk, dims = 2)
+
+  cbind(reserves, Total = rowSums(reserves))
+}
+```
+
+## Model Fitting: All Five Methods
+
+Now we fit all five models to the Hayne example data.
+
+```{r fit-all-models}
+model_names <- c("Chain", "CapeCod", "Berquist", "Hoerl", "Wright")
+
+results <- list()
+for (model_name in model_names) {
+  cat("Fitting", model_name, "model...\n")
+  results[[model_name]] <- fit_model(
+    model_name, B0, A0, dnom, paid_to_date, upper_triangle_mask
+  )
+  cat("  Convergence:", results[[model_name]]$convergence,
+      " Parameters:", results[[model_name]]$npar + 2, "\n")
+}
+```
+
+## Model 1: Chain Ladder
+
+The Chain Ladder model represents the standard actuarial approach where
+development factors link successive development periods. In this stochastic
+formulation, the expected emergence is parameterized such that development
+proportions sum to 1.
+
+### Parameters
+
+```{r chain-params}
+chain_fit <- results[["Chain"]]
+cat("Chain Ladder Model\n")
+cat("==================\n")
+cat("Number of parameters:", chain_fit$npar + 2, "\n")
+cat("  - Model parameters:", chain_fit$npar, "(development proportions)\n")
+cat("  - Variance parameters: 2 (kappa, p)\n\n")
+
+# Development pattern implied
+npar <- chain_fit$npar
+theta <- chain_fit$mle$par[1:npar]
+dev_pattern <- c(theta, 1 - sum(theta))
+cat("Implied development pattern:\n")
+names(dev_pattern) <- paste0("Lag", 1:length(dev_pattern))
+print(round(dev_pattern, 4))
+cat("\nCumulative:", round(cumsum(dev_pattern), 4), "\n")
+```
+
+### Fitted Values
+
+```{r chain-fitted}
+cat("\nFitted Mean (expected incremental averages):\n")
+print(round(chain_fit$mean, 2))
+```
+
+### Reserve Estimates
+
+```{r chain-reserves}
+chain_reserves <- calculate_reserves(chain_fit, dnom, upper_triangle_mask)
+knitr::kable(chain_reserves, digits = 0,
+             caption = "Chain Ladder Reserve Estimates")
+```
+
+## Model 2: Cape Cod (Bornhuetter-Ferguson)
+
+The Cape Cod model incorporates exposure information through a multiplicative
+structure with row (accident year) and column (development) factors. This
+allows for prior information about ultimate severity levels.
+
+### Parameters
+
+```{r capecod-params}
+cc_fit <- results[["CapeCod"]]
+cat("Cape Cod Model\n")
+cat("==============\n")
+cat("Number of parameters:", cc_fit$npar + 2, "\n")
+cat("  - Model parameters:", cc_fit$npar, "\n")
+cat("    - 1 level parameter\n")
+cat("    -", (size - 1), "row factors\n")
+cat("    -", (size - 1), "column factors\n")
+cat("  - Variance parameters: 2\n")
+```
+
+### Reserve Estimates
+
+```{r capecod-reserves}
+cc_reserves <- calculate_reserves(cc_fit, dnom, upper_triangle_mask)
+knitr::kable(cc_reserves, digits = 0,
+             caption = "Cape Cod Reserve Estimates")
+```
+
+## Model 3: Berquist-Sherman
+
+The Berquist-Sherman model is an incremental severity method that explicitly
+models trend over development periods. This is particularly useful when
+development patterns are changing over time.
+
+### Parameters
+
+```{r berquist-params}
+berq_fit <- results[["Berquist"]]
+cat("Berquist-Sherman Model\n")
+cat("======================\n")
+cat("Number of parameters:", berq_fit$npar + 2, "\n")
+cat("  - Model parameters:", berq_fit$npar, "\n")
+cat("    -", size, "accident year averages\n")
+cat("    - 1 trend parameter\n")
+cat("  - Variance parameters: 2\n\n")
+
+# Extract trend parameter
+trend_param <- berq_fit$mle$par[size + 1]
+cat("Estimated trend parameter:", round(trend_param, 4), "\n")
+cat("This implies", round((exp(trend_param) - 1) * 100, 2),
+    "% change per development period\n")
+```
+
+### Reserve Estimates
+
+```{r berquist-reserves}
+berq_reserves <- calculate_reserves(berq_fit, dnom, upper_triangle_mask)
+knitr::kable(berq_reserves, digits = 0,
+             caption = "Berquist-Sherman Reserve Estimates")
+```
+
+## Model 4: Hoerl Curve
+
+The Hoerl model uses a smooth mathematical curve to describe development
+rather than discrete factors. The curve includes polynomial and logarithmic
+terms in operational time, plus a row trend.
+
+### Mathematical Form
+
+$$\mu_{ij} = \exp(\alpha + \beta_1 \tau_j + \beta_2 \tau_j^2 +
+\beta_3 \log(\tau_j) + \beta_4 \cdot i)$$
+
+where $\tau_j$ is the development lag (operational time).
+
+### Parameters
+
+```{r hoerl-params}
+hoerl_fit <- results[["Hoerl"]]
+cat("Hoerl Curve Model\n")
+cat("=================\n")
+cat("Number of parameters:", hoerl_fit$npar + 2, "\n")
+cat("  - Model parameters:", hoerl_fit$npar, "\n")
+cat("    - alpha (intercept)\n")
+cat("    - beta1 (linear in tau)\n")
+cat("    - beta2 (quadratic in tau)\n")
+cat("    - beta3 (log tau)\n")
+cat("    - beta4 (row trend)\n")
+cat("  - Variance parameters: 2\n\n")
+
+hoerl_theta <- hoerl_fit$mle$par[1:5]
+names(hoerl_theta) <- c("alpha", "beta1", "beta2", "beta3", "beta4")
+print(round(hoerl_theta, 4))
+```
+
+### Reserve Estimates
+
+```{r hoerl-reserves}
+hoerl_reserves <- calculate_reserves(hoerl_fit, dnom, upper_triangle_mask)
+knitr::kable(hoerl_reserves, digits = 0,
+             caption = "Hoerl Curve Reserve Estimates")
+```
+
+## Model 5: Wright (Generalized Hoerl)
+
+The Wright model extends the Hoerl curve by allowing individual level
+parameters for each accident year rather than just a linear trend. This
+provides more flexibility at the cost of additional parameters.
+
+### Mathematical Form
+
+$$\mu_{ij} = \exp(\alpha_i + \beta_1 \tau_j + \beta_2 \tau_j^2 +
+\beta_3 \log(\tau_j))$$
+
+where $\alpha_i$ is an individual intercept for each accident year.
+
+### Parameters
+
+```{r wright-params}
+wright_fit <- results[["Wright"]]
+cat("Wright Model\n")
+cat("============\n")
+cat("Number of parameters:", wright_fit$npar + 2, "\n")
+cat("  - Model parameters:", wright_fit$npar, "\n")
+cat("    -", size, "individual year levels (alpha_i)\n")
+cat("    - 3 operational time parameters (beta1, beta2, beta3)\n")
+cat("  - Variance parameters: 2\n\n")
+
+wright_theta <- wright_fit$mle$par[1:wright_fit$npar]
+cat("Accident year levels:\n")
+print(round(wright_theta[1:size], 4))
+cat("\nOperational time parameters:\n")
+names(wright_theta[(size + 1):(size + 3)]) <- c("beta1", "beta2", "beta3")
+print(round(wright_theta[(size + 1):(size + 3)], 4))
+```
+
+### Reserve Estimates
+
+```{r wright-reserves}
+wright_reserves <- calculate_reserves(wright_fit, dnom, upper_triangle_mask)
+knitr::kable(wright_reserves, digits = 0,
+             caption = "Wright Model Reserve Estimates")
+```
+
+## Model Comparison
+
+### Reserve Estimates Comparison
+
+```{r compare-reserves}
+comparison <- data.frame(
+  Accident_Year = 1:size,
+  Chain = chain_reserves$reserve_mean[1:size],
+  CapeCod = cc_reserves$reserve_mean[1:size],
+  Berquist = berq_reserves$reserve_mean[1:size],
+  Hoerl = hoerl_reserves$reserve_mean[1:size],
+  Wright = wright_reserves$reserve_mean[1:size]
+)
+
+# Add totals
+comparison <- rbind(
+  comparison,
+  data.frame(
+    Accident_Year = "Total",
+    Chain = chain_reserves$reserve_mean[size + 1],
+    CapeCod = cc_reserves$reserve_mean[size + 1],
+    Berquist = berq_reserves$reserve_mean[size + 1],
+    Hoerl = hoerl_reserves$reserve_mean[size + 1],
+    Wright = wright_reserves$reserve_mean[size + 1]
+  )
+)
+
+knitr::kable(comparison, digits = 0,
+             caption = "Reserve Comparison Across Models")
+```
+
+### Parameter Count Comparison
+
+```{r param-comparison}
+param_df <- data.frame(
+  Model = model_names,
+  Model_Params = sapply(results, function(x) x$npar),
+  Variance_Params = 2,
+  Total_Params = sapply(results, function(x) x$npar + 2),
+  Convergence = sapply(results, function(x) x$convergence)
+)
+knitr::kable(param_df, caption = "Parameter Count by Model")
+```
+
+### Negative Log-Likelihood Comparison
+
+```{r nll-comparison}
+nll_df <- data.frame(
+  Model = model_names,
+  NegLogLik = sapply(results, function(x) x$mle$objective),
+  AIC = sapply(results, function(x) {
+    2 * (x$npar + 2) + 2 * x$mle$objective
+  }),
+  BIC = sapply(results, function(x) {
+    n_obs <- sum(!is.na(A0) & upper_triangle_mask)
+    log(n_obs) * (x$npar + 2) + 2 * x$mle$objective
+  })
+)
+nll_df <- nll_df[order(nll_df$AIC), ]
+knitr::kable(nll_df, digits = 2, row.names = FALSE,
+             caption = "Model Fit Statistics (sorted by AIC)")
+```
+
+## Diagnostic Plots
+
+### Residual Analysis
+
+Standardized residuals should be approximately standard normal if the model
+fits well.
+
+```{r residual-plots, fig.height=8}
+par(mfrow = c(3, 2))
+
+for (model_name in model_names) {
+  fit <- results[[model_name]]
+  stres <- fit$stres
+
+  # Q-Q plot
+  qqnorm(c(stres), main = paste(model_name, "- Q-Q Plot"))
+  qqline(c(stres), col = "red")
+}
+
+# Combined residual comparison
+par(mfrow = c(1, 1))
+```
+
+### Residuals by Calendar Year
+
+```{r residual-by-cy, fig.height=6}
+par(mfrow = c(2, 3))
+
+for (model_name in model_names) {
+  fit <- results[[model_name]]
+  stres <- fit$stres
+  cy <- rowNum + colNum - 1
+
+  plot(c(cy), c(stres),
+       main = paste(model_name, "- by Calendar Year"),
+       xlab = "Calendar Year", ylab = "Std Residual",
+       pch = 16, col = "blue")
+  abline(h = 0, col = "gray")
+
+  # Add mean by CY
+  cy_means <- tapply(c(stres), c(cy), mean, na.rm = TRUE)
+  lines(as.numeric(names(cy_means)), cy_means, col = "red", lwd = 2)
+}
+
+par(mfrow = c(1, 1))
+```
+
+### Residuals by Development Lag
+
+```{r residual-by-lag, fig.height=6}
+par(mfrow = c(2, 3))
+
+for (model_name in model_names) {
+  fit <- results[[model_name]]
+  stres <- fit$stres
+
+  plot(c(colNum), c(stres),
+       main = paste(model_name, "- by Lag"),
+       xlab = "Development Lag", ylab = "Std Residual",
+       pch = 16, col = "darkgreen")
+  abline(h = 0, col = "gray")
+
+  # Add mean by lag
+  lag_means <- colMeans(stres, na.rm = TRUE)
+  lines(1:size, lag_means, col = "red", lwd = 2)
+}
+
+par(mfrow = c(1, 1))
+```
+
+## Monte Carlo Simulation
+
+We run simulations to generate full reserve distributions for each model.
+
+```{r run-simulations}
+set.seed(123)
+nsim <- 5000
+
+sim_results <- list()
+for (model_name in model_names) {
+  cat("Running simulation for", model_name, "...\n")
+  sim_results[[model_name]] <- run_simulation(
+    results[[model_name]], dnom, upper_triangle_mask, nsim
+  )
+}
+```
+
+### Distribution of Total Reserves
+
+```{r sim-distributions, fig.height=6}
+par(mfrow = c(2, 3))
+
+for (model_name in model_names) {
+  sim <- sim_results[[model_name]]
+  if (!is.null(sim)) {
+    hist(sim[, "Total"], breaks = 50, main = model_name,
+         xlab = "Total Reserve", col = "lightblue", border = "white")
+    abline(v = mean(sim[, "Total"]), col = "red", lwd = 2)
+    abline(v = quantile(sim[, "Total"], c(0.05, 0.95)),
+           col = "blue", lwd = 2, lty = 2)
+  }
+}
+
+par(mfrow = c(1, 1))
+```
+
+### Summary Statistics from Simulation
+
+```{r sim-summary}
+sim_summary <- data.frame(
+  Model = character(),
+  Mean = numeric(),
+  SD = numeric(),
+  CV = numeric(),
+  Q05 = numeric(),
+  Q50 = numeric(),
+  Q95 = numeric(),
+  stringsAsFactors = FALSE
+)
+
+for (model_name in model_names) {
+  sim <- sim_results[[model_name]]
+  if (!is.null(sim)) {
+    total <- sim[, "Total"]
+    sim_summary <- rbind(sim_summary, data.frame(
+      Model = model_name,
+      Mean = mean(total),
+      SD = sd(total),
+      CV = sd(total) / mean(total),
+      Q05 = quantile(total, 0.05),
+      Q50 = quantile(total, 0.50),
+      Q95 = quantile(total, 0.95)
+    ))
+  }
+}
+
+knitr::kable(sim_summary, digits = 0, row.names = FALSE,
+             caption = "Simulation Summary: Total Reserves")
+```
+
+## Application to Simulated Data
+
+We now apply all models to the simulated auto liability data to demonstrate
+robustness across different data characteristics.
+
+```{r fit-simulated}
+# Prepare simulated data
+size_sim <- nrow(B0_sim)
+logd_sim <- log(matrix(dnom_sim, size_sim, size_sim))
+rowNum_sim <- row(A0_sim)
+colNum_sim <- col(A0_sim)
+upper_triangle_mask_sim <- (size_sim - rowNum_sim) >= colNum_sim - 1
+msd_sim <- (size_sim - rowNum_sim) == colNum_sim - 1
+paid_to_date_sim <- rowSums(B0_sim * msd_sim, na.rm = TRUE)
+
+results_sim <- list()
+for (model_name in model_names) {
+  cat("Fitting", model_name, "to simulated data...\n")
+  results_sim[[model_name]] <- fit_model(
+    model_name, B0_sim, A0_sim, dnom_sim, paid_to_date_sim,
+    upper_triangle_mask_sim
+  )
+}
+```
+
+### Comparison on Simulated Data
+
+```{r compare-simulated}
+comparison_sim <- data.frame(
+  Model = model_names,
+  Reserve = sapply(results_sim, function(x) {
+    res <- calculate_reserves(x, dnom_sim, upper_triangle_mask_sim)
+    res$reserve_mean[size_sim + 1]
+  }),
+  True_IBNR = sum(sim_data$ultimates * dnom_sim) -
+    sum(B0_sim * upper_triangle_mask_sim * dnom_sim, na.rm = TRUE)
+)
+comparison_sim$Error_Pct <- (comparison_sim$Reserve -
+  comparison_sim$True_IBNR) / comparison_sim$True_IBNR * 100
+
+knitr::kable(comparison_sim, digits = c(0, 0, 0, 1), row.names = FALSE,
+             caption = "Reserve Estimates vs True IBNR (Simulated Data)")
+```
+
+## Model Selection Guidance
+
+Based on the analysis above, here is guidance for model selection:
+
+### When to Use Each Model
+
+1. **Chain Ladder**: Best for stable, mature lines with consistent development.
+   Fewest parameters (9) provides robustness but less flexibility.
+
+2. **Cape Cod**: Preferred when you have reliable prior information about
+   ultimate severity levels. The separate row and column factors (19 parameters)
+   provide flexibility but require more data to estimate reliably.
+
+3. **Berquist-Sherman**: Use when you suspect systematic changes in development
+   patterns over time. The explicit trend parameter (11 total) helps identify
+   and quantify development year trends.
+
+4. **Hoerl Curve**: Good for smooth development patterns. With only 5 model
+   parameters, it's parsimonious while still capturing key features. The
+   mathematical form ensures sensible extrapolation.
+
+5. **Wright**: Most flexible individual year treatment (13 parameters). Use
+   when accident years have genuinely different characteristics that shouldn't
+   be constrained to a linear trend.
+
+### Model Uncertainty
+
+As Hayne emphasizes, practitioners should "use multiple methods" because
+divergent forecasts indicate where underlying assumptions require investigation.
+The differences between models reflect **model uncertainty** - a key component
+of total reserve uncertainty often underappreciated in practice.
+
+## Conclusion
+
+This tutorial demonstrated all five stochastic reserving models in the
+`stochasticreserver` package:
+
+- **Chain Ladder**: Simplest, most constrained
+- **Cape Cod**: Exposure-based with separate factors
+- **Berquist-Sherman**: Explicit development trend
+- **Hoerl**: Smooth parametric curve
+- **Wright**: Individual year levels
+
+The unified maximum likelihood framework enables:
+1. Consistent parameter estimation across models
+2. Proper uncertainty quantification
+3. Model comparison via information criteria
+4. Monte Carlo simulation for reserve distributions
+
+For production use, consider:
+- Running multiple models and comparing results
+- Examining residual diagnostics carefully
+- Using simulation to capture parameter uncertainty
+- Recognizing that model differences indicate structural uncertainty
+
+## References
+
+Hayne, R. "A Flexible Framework for Stochastic Reserving Models."
+*Variance*, Vol 7, Issue 2. Available at:
+<https://variancejournal.org/article/120823>
+
+## Session Information
+
+```{r session-info}
+sessionInfo()
+```

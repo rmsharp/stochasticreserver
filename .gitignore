@@ -6,4 +6,8 @@ vignettes/figure
 vignettes/figure/*
 vignettes/*.pdf
 vignettes/*.tex
+vignettes/*.html
 renv.lock
+lib/
+*.html
+inst/extdata/presentations/*_files/
