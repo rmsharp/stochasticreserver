@@ -91,7 +91,9 @@ barplot(coverage_data$Coverage,
         ylab = "Percent Coverage",
         ylim = c(0, 100),
         las = 2,
-        cex.names = 0.7)
+        cex.names = 1.1,
+        cex.lab = 1.3,
+        cex.axis = 1.1)
 abline(h = 80, col = "blue", lty = 2)
 ```
 

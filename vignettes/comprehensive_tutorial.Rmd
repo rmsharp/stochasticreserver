@@ -3,9 +3,12 @@ title: "Comprehensive Tutorial: Stochastic Reserving Models"
 author: "R. Mark Sharp"
 date: "`r Sys.Date()`"
 output:
-  rmarkdown::html_vignette:
+  html_document:
     toc: true
     toc_depth: 3
+    toc_float: true
+    code_folding: hide
+    theme: readable
 vignette: >
   %\VignetteIndexEntry{Comprehensive Tutorial: Stochastic Reserving Models}
   %\VignetteEngine{knitr::rmarkdown}
