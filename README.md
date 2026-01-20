@@ -1,13 +1,17 @@
 
-[![Rdoc](http://www.rdocumentation.org/badges/version/roxygen2)](http://www.rdocumentation.org/packages/roxygen2)
-[![Build
-Status](https://travis-ci.org/rmsharp/stochasticreserver.svg?branch=master)](https://travis-ci.org/rmsharp/stochasticreserver)
-[![codecov](https://codecov.io/gh/rmsharp/stochasticreserver/branch/master/graph/badge.svg)](https://codecov.io/gh/rmsharp/stochasticreserver)
-<!--[![Rdoc](http://www.rdocumentation.org/badges/version/RDocumentation)](http://www.rdocumentation.org/packages/RDocumentation)
-<!--[![Rdoc](http://www.rdocumentation.org/badges/version/stochasticreserver)](http://www.rdocumentation.org/packages/gh/rmsharp/stochasticreserver)
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
 
-# stochasticreserver – Version 0.1.0
+[![R-CMD-check](https://github.com/rmsharp/stochasticreserver/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rmsharp/stochasticreserver/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check-scheduled](https://github.com/rmsharp/stochasticreserver/actions/workflows/R-CMD-check-scheduled.yaml/badge.svg)](https://github.com/rmsharp/stochasticreserver/actions/workflows/R-CMD-check-scheduled.yaml)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![codecov](https://codecov.io/gh/rmsharp/stochasticreserver/branch/master/graph/badge.svg)](https://app.codecov.io/gh/rmsharp/stochasticreserver)
+<!-- badges: end -->
+
+# stochasticreserver
 
 ## Introduction
 
@@ -23,7 +27,7 @@ stochastic framework.
 
 **For more information see:** [A Flexible Framework for Stochastic
 Reserving
-Models](http://www.variancejournal.org/issues/07-02/123.pdf "Original Paper")
+Models](https://variancejournal.org/article/120823 "Original Paper")
 
 ## Installation
 
@@ -47,4 +51,4 @@ Find online documentation at
 
 **For more information see:** [A Flexible Framework for Stochastic
 Reserving
-Models](http://www.variancejournal.org/issues/07-02/123.pdf "Original Paper")
+Models](https://variancejournal.org/article/120823 "Original Paper")

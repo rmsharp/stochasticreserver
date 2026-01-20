@@ -7,4 +7,4 @@ R. Mark Sharp
 
   - Start of generalizing code from [A Flexible Framework for Stochastic
     Reserving
-    Models](http://www.variancejournal.org/issues/07-02/123.pdf "Original Paper")
+    Models](https://variancejournal.org/article/120823 "Original Paper")

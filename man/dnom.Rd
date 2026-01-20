@@ -9,10 +9,12 @@
 \describe{
 \item{B0}{count forcast for the B0 development triangle.}
 }}
-\format{An object of class \code{numeric} of length 10.}
+\format{
+An object of class \code{numeric} of length 10.
+}
 \source{
 "A Flexible Framework for Stochastic Reserving Models" found at
-\url{http://www.variancejournal.org/issues/07-02/123.pdf}
+\url{https://variancejournal.org/article/120823}
 }
 \usage{
 dnom

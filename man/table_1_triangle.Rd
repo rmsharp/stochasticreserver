@@ -4,13 +4,15 @@
 \name{table_1_triangle}
 \alias{table_1_triangle}
 \title{table_1_triangle is the development triangle from the reference article}
-\format{A 10 x 10 numeric matrix
+\format{
+A 10 x 10 numeric matrix
 \describe{
 \item{table_1_triangle}{Development triangle.}
-}}
+}
+}
 \source{
 "A Flexible Framework for Stochastic Reserving Models" found at
-\url{http://www.variancejournal.org/issues/07-02/123.pdf}
+\url{https://variancejournal.org/article/120823}
 }
 \usage{
 table_1_triangle

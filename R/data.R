@@ -8,7 +8,7 @@
 #' \item{B0}{Development triangle.}
 #' }
 #' @source "A Flexible Framework for Stochastic Reserving Models" found at
-#' \url{http://www.variancejournal.org/issues/07-02/123.pdf}
+#' \url{https://variancejournal.org/article/120823}
 "B0"
 #' A0 is a 10 x 10 matrix representing the upper triangle of a actuarial
 #' development triangle used by Roger Hayne to illustrate the stochastic
@@ -20,7 +20,7 @@
 #' \item{A0}{Development triangle.}
 #' }
 #' @source "A Flexible Framework for Stochastic Reserving Models" found at
-#' \url{http://www.variancejournal.org/issues/07-02/123.pdf}
+#' \url{https://variancejournal.org/article/120823}
 "A0"
 #' dnom is count forcast for the B0 development triangle; the exposures
 #' (claims) used in the denominator
@@ -29,7 +29,7 @@
 #' \item{B0}{count forcast for the B0 development triangle.}
 #' }
 #' @source "A Flexible Framework for Stochastic Reserving Models" found at
-#' \url{http://www.variancejournal.org/issues/07-02/123.pdf}
+#' \url{https://variancejournal.org/article/120823}
 "dnom"
 #' table_1_triangle is the development triangle from the reference article
 #'
@@ -40,5 +40,5 @@
 #' \item{table_1_triangle}{Development triangle.}
 #' }
 #' @source "A Flexible Framework for Stochastic Reserving Models" found at
-#' \url{http://www.variancejournal.org/issues/07-02/123.pdf}
+#' \url{https://variancejournal.org/article/120823}
 "table_1_triangle"

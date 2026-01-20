@@ -1,0 +1,245 @@
+---
+title: "stochasticreserver: Journey to CRAN Readiness"
+author: "R. Mark Sharp"
+date: "January 20, 2026"
+format:
+  revealjs:
+    theme: default
+    slide-number: true
+    smaller: true
+    scrollable: true
+    code-fold: false
+    highlight-style: github
+---
+
+## Package Overview
+
+### stochasticreserver
+
+A **Flexible Framework for Stochastic Reserving Models**
+
+- Implements maximum likelihood estimators for actuarial reserving
+- Handles non-linear reserving models directly
+- No transformation needed for linear/GLM methods
+- Unified framework for five common reserving methods
+
+**Based on:** Roger Hayne's paper in *Variance* journal
+
+---
+
+## The Five Reserving Methods
+
+| Method | Description |
+|--------|-------------|
+| **Berquist** | Berquist-Sherman method |
+| **CapeCod** | Cape Cod (Bornhuetter-Ferguson variant) |
+| **Chain** | Chain Ladder method |
+| **Hoerl** | Hoerl curve method |
+| **Wright** | Wright method |
+
+All methods share a common statistical framework using maximum likelihood estimation.
+
+---
+
+## Session Goal
+
+**Transform the package for CRAN submission**
+
+Tasks accomplished:
+1. Add code quality tools (covr, lintr)
+2. Configure linting standards
+3. Run comprehensive quality checks
+4. Identify issues blocking CRAN submission
+
+---
+
+## Step 1: Adding Quality Tools
+
+### DESCRIPTION Updates
+
+```r
+Suggests:
+    covr,       # Already present
+    lintr,      # Added this session
+    ...
+```
+
+### Created .lintr Configuration
+
+```yaml
+linters: linters_with_defaults(
+    line_length_linter(120),
+    object_name_linter(styles = c("snake_case", "symbols",
+                                   "camelCase", "dotted.case")),
+    cyclocomp_linter(complexity_limit = 25)
+  )
+```
+
+---
+
+## Step 2: Lintr Results
+
+### Total Issues Found: **2,598**
+
+| Location | Issue Type |
+|----------|------------|
+| Example scripts | Style violations |
+| Vignettes | Formatting issues |
+| R/ source | Minor naming issues |
+
+**Common Issues:**
+
+- Missing spaces after commas
+- Using `=` instead of `<-` for assignment
+- Trailing whitespace
+- Commented-out code
+
+---
+
+## Step 3: Code Coverage (covr)
+
+### Overall Coverage: **7.23%**
+
+```{r}
+#| echo: false
+#| fig-height: 4
+coverage_data <- data.frame(
+  File = c("get_incremental_avg_matrix.R", "berquist.R", "Other (8 files)"),
+  Coverage = c(100, 57.14, 0)
+)
+barplot(coverage_data$Coverage,
+        names.arg = c("get_incr...", "berquist", "Others"),
+        col = c("green", "yellow", "red"),
+        main = "Code Coverage by File",
+        ylab = "Percent Coverage",
+        ylim = c(0, 100))
+abline(h = 80, col = "blue", lty = 2)
+text(2.5, 85, "Target: 80%", col = "blue")
+```
+
+**Action needed:** Add tests for 8 uncovered files
+
+---
+
+## Step 4: R CMD check --as-cran
+
+### Result: **6 NOTEs** (No ERRORs or WARNINGs)
+
+| NOTE | Description | Priority |
+|------|-------------|----------|
+| 1 | Invalid/moved URLs | High |
+| 2 | Unknown 'DisplayMode' field | High |
+| 3 | Author/Authors@R mismatch | High |
+| 4 | License DCF format | High |
+| 5 | Hidden files (.lintr, .claude) | Fixed |
+| 6 | Non-standard files | Fixed |
+
+---
+
+## Issues Fixed This Session
+
+### .Rbuildignore Updated
+
+Added exclusions to prevent check failures:
+
+```
+^\.lintr$
+^\.claude$
+^INTERACTIONS_LOG\.md$
+^run_checks\.R$
+```
+
+These files are now excluded from the package build.
+
+---
+
+## Remaining CRAN Blockers
+
+### High Priority (Must Fix)
+
+1. **URL Issues**
+   - `variancejournal.org` link returns 404
+   - Travis CI and Codecov URLs have moved
+
+2. **DESCRIPTION Cleanup**
+   - Remove `DisplayMode: Showcase` field
+   - Align `Author` with `Authors@R`
+   - Fix License DCF format
+
+---
+
+## Recommended Improvements
+
+### Medium Priority
+
+| Task | Current | Target |
+|------|---------|--------|
+| Test Coverage | 7.23% | 80%+ |
+| CI Badges | Outdated | Updated |
+| Lint Issues | 2,598 | <100 |
+
+### Low Priority
+
+- Fix vignette code style
+- Remove commented code
+- Update example scripts
+
+---
+
+## Summary: Package Transformation
+
+### Before This Session
+- No lintr configuration
+- No awareness of lint issues
+- Unknown CRAN readiness status
+
+### After This Session
+- lintr configured and integrated
+- 2,598 lint issues identified
+- 7.23% coverage measured
+- 6 NOTEs documented
+- Clear roadmap to CRAN submission
+
+---
+
+## Next Steps
+
+1. **Fix DESCRIPTION issues**
+   - Remove DisplayMode
+   - Align Author fields
+
+2. **Update documentation URLs**
+   - Find working variancejournal.org link
+   - Update CI badge URLs
+
+3. **Increase test coverage**
+   - Write tests for 8 uncovered files
+   - Target 80%+ coverage
+
+4. **Re-run R CMD check**
+   - Goal: 0 NOTEs
+
+---
+
+## Files Modified
+
+| File | Change |
+|------|--------|
+| `DESCRIPTION` | Added lintr to Suggests |
+| `.lintr` | Created (new) |
+| `.Rbuildignore` | Added exclusions |
+| `INTERACTIONS_LOG.md` | Created (new) |
+
+---
+
+## Thank You
+
+### Resources
+
+- **Package:** [github.com/rmsharp/stochasticreserver](https://github.com/rmsharp/stochasticreserver)
+- **Documentation:** [rmsharp.github.io/stochasticreserver](https://rmsharp.github.io/stochasticreserver/)
+- **Original Paper:** Hayne, R. "A Flexible Framework for Stochastic Reserving Models" (*Variance*, Vol 7, Issue 2)
+
+### Session Log
+
+All actions documented in `INTERACTIONS_LOG.md`

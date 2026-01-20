@@ -6,13 +6,15 @@
 \title{B0 is a 10 x 10 matrix representing the upper triangle of a actuarial
 development triangle used by Roger Hayne to illustrate the stochastic
 loss reserving software in}
-\format{A 10 x 10 numeric matrix
+\format{
+A 10 x 10 numeric matrix
 \describe{
 \item{B0}{Development triangle.}
-}}
+}
+}
 \source{
 "A Flexible Framework for Stochastic Reserving Models" found at
-\url{http://www.variancejournal.org/issues/07-02/123.pdf}
+\url{https://variancejournal.org/article/120823}
 }
 \usage{
 B0

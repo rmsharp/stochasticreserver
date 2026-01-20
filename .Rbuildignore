@@ -24,3 +24,9 @@ CODE_OF_CONDUCT.md
 NEWS.Rmd
 README.Rmd
 .travis.yml
+^\.lintr$
+^\.claude$
+^INTERACTIONS_LOG\.md$
+^run_checks\.R$
+^README\.html$
+^coverage_report\.html$
