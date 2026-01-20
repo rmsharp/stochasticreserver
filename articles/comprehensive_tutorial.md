@@ -10,11 +10,12 @@ Standard development factor approach 2. **Cape Cod**
 Curve** - Smooth curve with shared operational time parameters 5.
 **Wright** - Generalized Hoerl with individual accident year levels
 
-These methods are based on Roger Hayne’s paper “A Flexible Framework for
-Stochastic Reserving Models” published in *Variance* journal. The key
-insight is that all five methods can be unified under a common maximum
-likelihood estimation framework, enabling consistent uncertainty
-quantification.
+These methods are based on Roger Hayne’s paper [“A Flexible Framework
+for Stochastic Reserving
+Models”](https://variancejournal.org/article/120823) published in
+*Variance* journal. The key insight is that all five methods can be
+unified under a common maximum likelihood estimation framework, enabling
+consistent uncertainty quantification.
 
 ## Theoretical Framework
 
