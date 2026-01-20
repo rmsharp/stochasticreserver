@@ -1,0 +1,33 @@
+# Create list for Kramer Chain Ladder parmaterization model g - Assumed loss emergence model, a function of the parameters a. Note g must be matrix-valued with size rows and size columns g itself Basic design is for g to be a function of a single parameter vector, however in the simulations it is necessary to work on a matrix of parameters, one row for each simulated parameter, so g_obj must be flexible enough to handle both. Here g_obj is nonlinear and based on the Kramer Chain Ladder parmaterization
+
+Create list for Kramer Chain Ladder parmaterization model g - Assumed
+loss emergence model, a function of the parameters a. Note g must be
+matrix-valued with size rows and size columns g itself Basic design is
+for g to be a function of a single parameter vector, however in the
+simulations it is necessary to work on a matrix of parameters, one row
+for each simulated parameter, so g_obj must be flexible enough to handle
+both. Here g_obj is nonlinear and based on the Kramer Chain Ladder
+parmaterization
+
+## Usage
+
+``` r
+capecod(B0, paid_to_date, upper_triangle_mask)
+```
+
+## Arguments
+
+- B0:
+
+  development triangle
+
+- paid_to_date:
+
+  numeric vector of length `size`. It is the lower diagnal of the
+  development triangle in row order. It represents the amount paid to
+  date.
+
+- upper_triangle_mask:
+
+  is a mask matrix of allowable data, upper triangular assuming same
+  development increments as exposure increments
