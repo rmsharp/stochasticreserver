@@ -1,5 +1,8 @@
-pandoc: '2.2'
-pkgdown: 1.4.1
+pandoc: 3.1.11
+pkgdown: 2.2.0
 pkgdown_sha: ~
-articles: []
-
+articles:
+  comprehensive_tutorial: comprehensive_tutorial.html
+  manual: manual.html
+  stochastic_reserving: stochastic_reserving.html
+last_built: 2026-01-20T17:17Z
