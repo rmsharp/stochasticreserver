@@ -116,13 +116,17 @@ abline(h = 80, col = "blue", lty = 2)
 
 ---
 
-## CRAN Issues Fixed
+## CRAN Issues Fixed (1/2)
 
 ### DESCRIPTION Cleanup
 - Removed `DisplayMode: Showcase` field
 - Fixed Authors@R format
 - Updated RoxygenNote to 7.3.3
 - Added testthat edition 3
+
+---
+
+## CRAN Issues Fixed (2/2)
 
 ### URL Fixes
 - Updated broken variancejournal.org links
