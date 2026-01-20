@@ -85,27 +85,139 @@ for Stochastic Reserving Models” published in <em>Variance</em> journal.
 The key insight is that all five methods can be unified under a common
 maximum likelihood estimation framework, enabling consistent uncertainty
 quantification.</p>
+</div>
+<div class="section level2">
+<h2 id="theoretical-framework">Theoretical Framework<a class="anchor" aria-label="anchor" href="#theoretical-framework"></a>
+</h2>
 <div class="section level3">
-<h3 id="mathematical-framework">Mathematical Framework<a class="anchor" aria-label="anchor" href="#mathematical-framework"></a>
+<h3 id="uncertainty-in-loss-reserving">Uncertainty in Loss Reserving<a class="anchor" aria-label="anchor" href="#uncertainty-in-loss-reserving"></a>
+</h3>
+<p>Loss reserve estimates face three distinct sources of
+uncertainty:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Process Uncertainty</strong> - Inherent stochastic
+fluctuation in outcomes even when parameters are known exactly. This
+represents the irreducible randomness in insurance claim
+development.</p></li>
+<li><p><strong>Parameter Uncertainty</strong> - Error from estimating
+unknown parameters. Even with the correct model structure, finite data
+leads to estimation error.</p></li>
+<li><p><strong>Model Uncertainty</strong> - Risk that the assumed model
+structure doesn’t match actual data-generating processes. Different
+reserving methods may yield different estimates, revealing where
+assumptions require investigation.</p></li>
+</ol>
+<p>This package addresses process and parameter uncertainty through
+maximum likelihood estimation (MLE). Model uncertainty is addressed by
+enabling comparison across multiple methods.</p>
+</div>
+<div class="section level3">
+<h3 id="maximum-likelihood-estimation">Maximum Likelihood Estimation<a class="anchor" aria-label="anchor" href="#maximum-likelihood-estimation"></a>
+</h3>
+<p>MLEs have desirable asymptotic properties (as sample size
+increases):</p>
+<ul>
+<li>
+<strong>Consistency</strong>: Estimates converge to true parameter
+values</li>
+<li>
+<strong>Efficiency</strong>: Variance achieves the theoretical lower
+bound (Cramér-Rao)</li>
+<li>
+<strong>Asymptotic Normality</strong>: Distribution approaches
+Gaussian with mean
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
+and covariance equal to the inverse Fisher information matrix</li>
+</ul>
+<p>The <strong>Fisher Information Matrix</strong> is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><mfrac><msup><mi>∂</mi><mn>2</mn></msup><mrow><mi>∂</mi><msub><mi>θ</mi><mi>i</mi></msub><mi>∂</mi><msub><mi>θ</mi><mi>j</mi></msub></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mo>ln</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>X</mi><mo stretchy="false" form="prefix">|</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">I(\theta)_{ij} = E\left[\frac{\partial^2}{\partial\theta_i\partial\theta_j}
+(-\ln L(X|\theta))\right]</annotation></semantics></math></p>
+<p>This enables uncertainty quantification through the
+variance-covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Σ</mi><mo>=</mo><mi>I</mi><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\Sigma = I(\theta)^{-1}</annotation></semantics></math>.</p>
+</div>
+<div class="section level3">
+<h3 id="stochastic-model-for-incremental-averages">Stochastic Model for Incremental Averages<a class="anchor" aria-label="anchor" href="#stochastic-model-for-incremental-averages"></a>
 </h3>
 <p>All models share a common likelihood structure. For incremental
 averages
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">A_{ij}</annotation></semantics></math>,
-we assume:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">A_{ij} \sim N(\mu_{ij}, \sigma^2_{ij})</annotation></semantics></math></p>
-<p>where the variance depends on the expected value:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>σ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup><mo>=</mo><msup><mi>e</mi><mrow><mi>κ</mi><mo>−</mo><msub><mi>w</mi><mi>i</mi></msub></mrow></msup><mo>⋅</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>μ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mi>p</mi></msup></mrow><annotation encoding="application/x-tex">\sigma^2_{ij} = e^{\kappa - w_i} \cdot (\mu_{ij}^2)^p</annotation></semantics></math></p>
-<p>Here
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">A_{ij}</annotation></semantics></math>
+(where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+= accident year,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
+= development lag), we assume:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>g</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">A_{ij} \sim N(g_{ij}(\theta), \sigma^2_{ij})</annotation></semantics></math></p>
+<p>The expected value
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g_{ij}(\theta)</annotation></semantics></math>
+is model-specific (Chain Ladder, Cape Cod, etc.), while the variance
+structure is shared:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>σ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup><mo>=</mo><msup><mi>e</mi><mrow><mi>κ</mi><mo>−</mo><msub><mi>w</mi><mi>i</mi></msub></mrow></msup><mo>⋅</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>g</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow><mi>p</mi></msup></mrow><annotation encoding="application/x-tex">\sigma^2_{ij} = e^{\kappa - w_i} \cdot (g_{ij}(\theta)^2)^p</annotation></semantics></math></p>
+<p>where:</p>
+<ul>
+<li>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>κ</mi><annotation encoding="application/x-tex">\kappa</annotation></semantics></math>
-is a proportionality constant,
+is a proportionality constant</li>
+<li>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mi>i</mi></msub><mo>=</mo><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>d</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">w_i = \log(d_i)</annotation></semantics></math>
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mi>i</mi></msub><annotation encoding="application/x-tex">d_i</annotation></semantics></math>
 is the exposure count for accident year
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,
-and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+</li>
+<li>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
-is a power parameter controlling how variance scales with the mean.</p>
+is a power parameter controlling heteroscedasticity</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="negative-log-likelihood-function">Negative Log-Likelihood Function<a class="anchor" aria-label="anchor" href="#negative-log-likelihood-function"></a>
+</h3>
+<p>For a single observation, the negative log-likelihood is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>ℓ</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>;</mo><mi>μ</mi><mo>,</mo><mi>κ</mi><mo>,</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mi>κ</mi><mo>−</mo><mi>w</mi><mo>+</mo><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mi>π</mi><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>μ</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow><mi>p</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>−</mo><mi>μ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mn>2</mn><msup><mi>e</mi><mrow><mi>κ</mi><mo>−</mo><mi>w</mi></mrow></msup><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>μ</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow><mi>p</mi></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">\ell(x; \mu, \kappa, p) = \frac{1}{2}\left(\kappa - w +
+\ln(2\pi(\mu^2)^p)\right) + \frac{(x-\mu)^2}{2e^{\kappa-w}(\mu^2)^p}</annotation></semantics></math></p>
+<p>The total objective function sums over all available cells in the
+triangle.</p>
+</div>
+<div class="section level3">
+<h3 id="the-five-model-forms">The Five Model Forms<a class="anchor" aria-label="anchor" href="#the-five-model-forms"></a>
+</h3>
+<p>Each model specifies a different expected value function
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g_{ij}(\theta)</annotation></semantics></math>:
+| Model | Expected Value Form | Parameters | |——-|———————|————| |
+<strong>Chain Ladder</strong> |
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mi>j</mi></msub><mo>⋅</mo><msub><mi>U</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">\theta_j \cdot U_i</annotation></semantics></math>
+| Development proportions (sum to 1) | | <strong>Cape Cod</strong> |
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mn>0</mn></msub><mo>⋅</mo><msubsup><mi>θ</mi><mi>i</mi><mrow><mi>r</mi><mi>o</mi><mi>w</mi></mrow></msubsup><mo>⋅</mo><msubsup><mi>θ</mi><mi>j</mi><mrow><mi>c</mi><mi>o</mi><mi>l</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">\theta_0 \cdot \theta_i^{row} \cdot \theta_j^{col}</annotation></semantics></math>
+| Level + row/column factors | | <strong>Berquist-Sherman</strong> |
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mi>i</mi></msub><mo>⋅</mo><msup><mi>e</mi><mrow><msub><mi>θ</mi><mrow><mi>t</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>d</mi></mrow></msub><mo>⋅</mo><mi>j</mi></mrow></msup></mrow><annotation encoding="application/x-tex">\theta_i \cdot e^{\theta_{trend} \cdot j}</annotation></semantics></math>
+| Year levels + trend | | <strong>Hoerl Curve</strong> |
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>e</mi><mrow><mi>α</mi><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mi>τ</mi><mo>+</mo><msub><mi>β</mi><mn>2</mn></msub><msup><mi>τ</mi><mn>2</mn></msup><mo>+</mo><msub><mi>β</mi><mn>3</mn></msub><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>τ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>β</mi><mn>4</mn></msub><mi>i</mi></mrow></msup><annotation encoding="application/x-tex">e^{\alpha + \beta_1\tau + \beta_2\tau^2 + \beta_3\ln(\tau) + \beta_4 i}</annotation></semantics></math>
+| Curve params + row trend | | <strong>Wright</strong> |
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>e</mi><mrow><msub><mi>α</mi><mi>i</mi></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mi>τ</mi><mo>+</mo><msub><mi>β</mi><mn>2</mn></msub><msup><mi>τ</mi><mn>2</mn></msup><mo>+</mo><msub><mi>β</mi><mn>3</mn></msub><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>τ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msup><annotation encoding="application/x-tex">e^{\alpha_i + \beta_1\tau + \beta_2\tau^2 + \beta_3\ln(\tau)}</annotation></semantics></math>
+| Individual levels + curve |</p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
+represents operational time (development lag) and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>U</mi><mi>i</mi></msub><annotation encoding="application/x-tex">U_i</annotation></semantics></math>
+represents the ultimate for accident year
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.</p>
+</div>
+<div class="section level3">
+<h3 id="gradient-and-hessian">Gradient and Hessian<a class="anchor" aria-label="anchor" href="#gradient-and-hessian"></a>
+</h3>
+<p>Efficient optimization requires analytical gradients and Hessians.
+For parameter vector
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐚</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>θ</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>θ</mi><mi>k</mi></msub><mo>,</mo><mi>κ</mi><mo>,</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathbf{a} = (\theta_1, \ldots, \theta_k, \kappa, p)</annotation></semantics></math>:</p>
+<p><strong>Gradient with respect to model parameters:</strong>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>∂</mi><mo>ℓ</mo></mrow><mrow><mi>∂</mi><mi>θ</mi></mrow></mfrac><mo>=</mo><munder><mo>∑</mo><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></munder><mi>g</mi><msub><mi>′</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mi>p</mi><msub><mi>μ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mfrac><mo>+</mo><mfrac><mrow><msub><mi>μ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><msubsup><mi>σ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup></mfrac><mo>−</mo><mfrac><mrow><mi>p</mi><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><msub><mi>μ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><msubsup><mi>σ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup><msub><mi>μ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\frac{\partial \ell}{\partial \theta} = \sum_{i,j} g'_{ij}(\theta) \cdot
+\left(\frac{p}{\mu_{ij}} + \frac{\mu_{ij} - A_{ij}}{\sigma^2_{ij}} -
+\frac{p(A_{ij} - \mu_{ij})^2}{\sigma^2_{ij} \mu_{ij}}\right)</annotation></semantics></math></p>
+<p><strong>Gradient with respect to variance parameters:</strong>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>∂</mi><mo>ℓ</mo></mrow><mrow><mi>∂</mi><mi>κ</mi></mrow></mfrac><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><munder><mo>∑</mo><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></munder><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><msub><mi>μ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><msubsup><mi>σ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\frac{\partial \ell}{\partial \kappa} = \frac{1}{2}\sum_{i,j}
+\left(1 - \frac{(A_{ij} - \mu_{ij})^2}{\sigma^2_{ij}}\right)</annotation></semantics></math></p>
+<p>The Hessian matrix enables Newton-type optimization and provides the
+information matrix for uncertainty quantification.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">stochasticreserver</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://mvtnorm.R-forge.R-project.org" class="external-link">mvtnorm</a></span><span class="op">)</span></span>
