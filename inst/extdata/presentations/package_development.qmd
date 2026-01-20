@@ -181,6 +181,80 @@ All badges link to the stochasticreserver repository.
 
 ---
 
+## GitHub Actions CI/CD
+
+### 5 Automated Workflows
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| R-CMD-check | Push/PR | Multi-platform testing |
+| R-CMD-check-scheduled | Monday 9:00 UTC | Catch dependency changes |
+| test-coverage | Push/PR | Codecov reporting |
+| pkgdown | Push/PR/Release | Documentation site |
+| lint | Push/PR | Code quality |
+
+---
+
+## CI/CD Testing Matrix
+
+### R-CMD-check runs on:
+
+- **macOS** (latest) - R release
+- **Windows** (latest) - R release
+- **Ubuntu** (latest) - R devel, release, oldrel-1
+
+All platforms must pass for merge.
+
+---
+
+## Codecov Integration
+
+### Coverage Tracking
+
+- **codecov.yml** configuration added
+- Coverage precision: 2 decimal places
+- Threshold: 1% tolerance
+- PR comments show coverage diff
+
+**Live dashboard:**
+[app.codecov.io/gh/rmsharp/stochasticreserver](https://app.codecov.io/gh/rmsharp/stochasticreserver)
+
+---
+
+## Documentation Site
+
+### pkgdown at GitHub Pages
+
+**Features:**
+
+- Automatic deployment on push
+- Function reference organized by category
+- Vignettes as Articles
+- Code folding (custom JavaScript)
+- Bootstrap 5 theme
+
+**URL:** [rmsharp.github.io/stochasticreserver](https://rmsharp.github.io/stochasticreserver/)
+
+---
+
+## Comprehensive Tutorial
+
+### All 5 Models Demonstrated
+
+**Tutorial includes:**
+
+- Theoretical framework from Hayne paper
+- MLE properties and Fisher information
+- All model mathematical forms
+- Reserve comparison across models
+- AIC/BIC model selection
+- Residual diagnostics
+- Monte Carlo simulation (5,000 iterations)
+
+**With code folding** - click to expand code blocks
+
+---
+
 ## Git Commit
 
 ### Commit: `faba7f4`
