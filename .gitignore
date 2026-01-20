@@ -11,3 +11,5 @@ renv.lock
 lib/
 *.html
 inst/extdata/presentations/*_files/
+*.Rcheck/
+*.tar.gz

@@ -1,0 +1,57 @@
+url: https://rmsharp.github.io/stochasticreserver/
+
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Comprehensive Tutorial
+        href: articles/comprehensive_tutorial.html
+      - text: Example Stochastic Reserving
+        href: articles/stochastic_reserving.html
+      - text: Manual
+        href: articles/manual.html
+
+articles:
+- title: Tutorials
+  navbar: ~
+  contents:
+  - comprehensive_tutorial
+  - stochastic_reserving
+- title: Reference
+  contents:
+  - manual
+
+reference:
+- title: Reserving Models
+  desc: Five stochastic reserving model implementations
+  contents:
+  - berquist
+  - capecod
+  - chain
+  - hoerl
+  - wright
+- title: Optimization Functions
+  desc: Maximum likelihood estimation framework
+  contents:
+  - make_negative_log_likelihood
+  - make_gradient_of_objective
+  - make_log_hessian
+- title: Utility Functions
+  desc: Helper functions and data
+  contents:
+  - get_incremental_avg_matrix
+  - model_description
+- title: Data
+  desc: Example datasets
+  contents:
+  - B0
+  - A0
+  - dnom
+  - table_1_triangle

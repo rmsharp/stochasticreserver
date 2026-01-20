@@ -30,3 +30,7 @@ README.Rmd
 ^run_checks\.R$
 ^README\.html$
 ^coverage_report\.html$
+^\.github$
+inst/extdata/presentations/.*\.html$
+inst/extdata/presentations/.*_files$
+^lib$
