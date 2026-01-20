@@ -23,6 +23,7 @@ Suggests:
     covr,
     knitr,
     lintr,
+    markdown,
     MASS,
     mvtnorm,
     pkgdown,

@@ -37,20 +37,101 @@ Stochastic Reserving Models" published in *Variance* journal. The key insight
 is that all five methods can be unified under a common maximum likelihood
 estimation framework, enabling consistent uncertainty quantification.
 
-### Mathematical Framework
+## Theoretical Framework
+
+### Uncertainty in Loss Reserving
+
+Loss reserve estimates face three distinct sources of uncertainty:
+
+1. **Process Uncertainty** - Inherent stochastic fluctuation in outcomes even
+   when parameters are known exactly. This represents the irreducible randomness
+   in insurance claim development.
+
+2. **Parameter Uncertainty** - Error from estimating unknown parameters. Even
+   with the correct model structure, finite data leads to estimation error.
+
+3. **Model Uncertainty** - Risk that the assumed model structure doesn't match
+   actual data-generating processes. Different reserving methods may yield
+   different estimates, revealing where assumptions require investigation.
+
+This package addresses process and parameter uncertainty through maximum
+likelihood estimation (MLE). Model uncertainty is addressed by enabling
+comparison across multiple methods.
+
+### Maximum Likelihood Estimation
+
+MLEs have desirable asymptotic properties (as sample size increases):
+
+- **Consistency**: Estimates converge to true parameter values
+- **Efficiency**: Variance achieves the theoretical lower bound (Cramér-Rao)
+- **Asymptotic Normality**: Distribution approaches Gaussian with mean $\theta$
+  and covariance equal to the inverse Fisher information matrix
+
+The **Fisher Information Matrix** is:
+
+$$I(\theta)_{ij} = E\left[\frac{\partial^2}{\partial\theta_i\partial\theta_j}
+(-\ln L(X|\theta))\right]$$
+
+This enables uncertainty quantification through the variance-covariance matrix
+$\Sigma = I(\theta)^{-1}$.
+
+### Stochastic Model for Incremental Averages
 
 All models share a common likelihood structure. For incremental averages
-$A_{ij}$, we assume:
+$A_{ij}$ (where $i$ = accident year, $j$ = development lag), we assume:
 
-$$A_{ij} \sim N(\mu_{ij}, \sigma^2_{ij})$$
+$$A_{ij} \sim N(g_{ij}(\theta), \sigma^2_{ij})$$
 
-where the variance depends on the expected value:
+The expected value $g_{ij}(\theta)$ is model-specific (Chain Ladder, Cape Cod,
+etc.), while the variance structure is shared:
 
-$$\sigma^2_{ij} = e^{\kappa - w_i} \cdot (\mu_{ij}^2)^p$$
+$$\sigma^2_{ij} = e^{\kappa - w_i} \cdot (g_{ij}(\theta)^2)^p$$
 
-Here $\kappa$ is a proportionality constant, $w_i = \log(d_i)$ where $d_i$ is
-the exposure count for accident year $i$, and $p$ is a power parameter
-controlling how variance scales with the mean.
+where:
+
+- $\kappa$ is a proportionality constant
+- $w_i = \log(d_i)$ where $d_i$ is the exposure count for accident year $i$
+- $p$ is a power parameter controlling heteroscedasticity
+
+### Negative Log-Likelihood Function
+
+For a single observation, the negative log-likelihood is:
+
+$$\ell(x; \mu, \kappa, p) = \frac{1}{2}\left(\kappa - w +
+\ln(2\pi(\mu^2)^p)\right) + \frac{(x-\mu)^2}{2e^{\kappa-w}(\mu^2)^p}$$
+
+The total objective function sums over all available cells in the triangle.
+
+### The Five Model Forms
+
+Each model specifies a different expected value function $g_{ij}(\theta)$:
+| Model | Expected Value Form | Parameters |
+|-------|---------------------|------------|
+| **Chain Ladder** | $\theta_j \cdot U_i$ | Development proportions (sum to 1) |
+| **Cape Cod** | $\theta_0 \cdot \theta_i^{row} \cdot \theta_j^{col}$ | Level + row/column factors |
+| **Berquist-Sherman** | $\theta_i \cdot e^{\theta_{trend} \cdot j}$ | Year levels + trend |
+| **Hoerl Curve** | $e^{\alpha + \beta_1\tau + \beta_2\tau^2 + \beta_3\ln(\tau) + \beta_4 i}$ | Curve params + row trend |
+| **Wright** | $e^{\alpha_i + \beta_1\tau + \beta_2\tau^2 + \beta_3\ln(\tau)}$ | Individual levels + curve |
+
+where $\tau$ represents operational time (development lag) and $U_i$ represents
+the ultimate for accident year $i$.
+
+### Gradient and Hessian
+
+Efficient optimization requires analytical gradients and Hessians. For parameter
+vector $\mathbf{a} = (\theta_1, \ldots, \theta_k, \kappa, p)$:
+
+**Gradient with respect to model parameters:**
+$$\frac{\partial \ell}{\partial \theta} = \sum_{i,j} g'_{ij}(\theta) \cdot
+\left(\frac{p}{\mu_{ij}} + \frac{\mu_{ij} - A_{ij}}{\sigma^2_{ij}} -
+\frac{p(A_{ij} - \mu_{ij})^2}{\sigma^2_{ij} \mu_{ij}}\right)$$
+
+**Gradient with respect to variance parameters:**
+$$\frac{\partial \ell}{\partial \kappa} = \frac{1}{2}\sum_{i,j}
+\left(1 - \frac{(A_{ij} - \mu_{ij})^2}{\sigma^2_{ij}}\right)$$
+
+The Hessian matrix enables Newton-type optimization and provides the information
+matrix for uncertainty quantification.
 
 ```{r load-packages}
 library(stochasticreserver)

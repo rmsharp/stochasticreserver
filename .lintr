@@ -6,3 +6,7 @@ linters: linters_with_defaults(
 exclude: "# nolint"
 exclude_start: "# nolint start"
 exclude_end: "# nolint end"
+exclusions: list(
+    "inst/extdata/Appendix_G_R-Example.R",
+    "vignettes/stochastic_reserving.Rmd"
+  )
