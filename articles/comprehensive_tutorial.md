@@ -13,9 +13,11 @@ Curve** - Smooth curve with shared operational time parameters 5.
 These methods are based on Roger Hayne’s paper [“A Flexible Framework
 for Stochastic Reserving
 Models”](https://variancejournal.org/article/120823) published in
-*Variance* journal. The key insight is that all five methods can be
-unified under a common maximum likelihood estimation framework, enabling
-consistent uncertainty quantification.
+*Variance* journal
+([PDF](https://www.casact.org/sites/default/files/2021-08/Flexible-Framework-Hayne.pdf)).
+The key insight is that all five methods can be unified under a common
+maximum likelihood estimation framework, enabling consistent uncertainty
+quantification.
 
 ## Theoretical Framework
 
