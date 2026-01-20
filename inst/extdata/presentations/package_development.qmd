@@ -255,24 +255,27 @@ All platforms must pass for merge.
 - Residual diagnostics
 - Monte Carlo simulation (5,000 iterations)
 
-**With code folding** - click to expand code blocks
+**Features:**
+
+- Code folding - click to expand code blocks
+- Linked reference to [Hayne paper](https://variancejournal.org/article/120823)
 
 ---
 
-## Git Commit
+## Session Commits
 
-### Commit: `faba7f4`
+### 8 Commits This Session
 
-**Changes:**
-- 26 files changed
-- 1,581 insertions
-- 189 deletions
-
-**New files:**
-- 8 test files
-- 1 presentation (Quarto)
-- 1 interaction log
-- 1 lintr configuration
+| Commit | Description |
+|--------|-------------|
+| faba7f4 | Comprehensive tests, CRAN fixes |
+| 525b777 | Code folding JavaScript |
+| 37161be | Tutorial code folding, chart fonts |
+| 8dad67f | Codecov configuration |
+| 000cd1f | Manual workflow trigger |
+| 21f69eb | Documentation updates |
+| 97ca37e | Split presentation slides |
+| 4203a4f | Tutorial paper link |
 
 ---
 

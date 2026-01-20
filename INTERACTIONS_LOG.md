@@ -651,3 +651,49 @@ Configuration includes:
 - All URLs working
 - Modern testthat 3.x
 - Comprehensive documentation
+
+---
+
+### Request 12: Presentation Slide Fix
+**Prompt:** Slide "CRAN Issues Fixed" is too long
+
+**Actions Completed:**
+
+Split the "CRAN Issues Fixed" slide into two slides for better readability:
+- **CRAN Issues Fixed (1/2):** DESCRIPTION Cleanup
+- **CRAN Issues Fixed (2/2):** URL Fixes and LICENSE Fix
+
+**Commit:** `97ca37e` - Split CRAN Issues Fixed slide into two slides
+
+**Status:** Completed
+
+---
+
+### Request 13: Add Link to Hayne Paper in Tutorial
+**Prompt:** Make the title in "Roger Hayne's paper 'A Flexible Framework for
+Stochastic Reserving Models' published in Variance journal" an HTML link to the
+paper
+
+**Actions Completed:**
+
+Updated `vignettes/comprehensive_tutorial.Rmd` to make the paper title a
+clickable link to https://variancejournal.org/article/120823
+
+**Commit:** `4203a4f` - Add link to Hayne paper in comprehensive tutorial
+
+**Status:** Completed
+
+---
+
+## Session Commits Summary
+
+| Commit | Description |
+|--------|-------------|
+| faba7f4 | Add comprehensive tests, fix CRAN issues, update code style |
+| 525b777 | Add code folding JavaScript to pkgdown site |
+| 37161be | Add code folding to tutorial and fix presentation chart fonts |
+| 8dad67f | Add codecov.yml configuration |
+| 000cd1f | Enable manual trigger for test-coverage workflow |
+| 21f69eb | Update INTERACTIONS_LOG and presentation with CI/CD content |
+| 97ca37e | Split CRAN Issues Fixed slide into two slides |
+| 4203a4f | Add link to Hayne paper in comprehensive tutorial |
