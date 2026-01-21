@@ -121,10 +121,10 @@ hoerl <- function(B0, paid_to_date, upper_triangle_mask) {
   ))
   ccs <- array(coef(lm(tmp$y ~ tmp$x1 + tmp$x2 + tmp$x3)))[1:4]
   a0 <- c(c(ccs), trd)
-  return(list(
+  list(
     g_obj = g_obj,
     g_grad = g_grad,
     g_hess = g_hess,
     a0 = a0
-  ))
+  )
 }

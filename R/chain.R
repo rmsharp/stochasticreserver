@@ -103,8 +103,7 @@ chain <- function(B0, paid_to_date, upper_triangle_mask) {
   # Note the Hessian is a 4-dimensional function of the parameters theta
   # with dimensions (size - 1) (=length(theta)), (size - 1), size, size.
   # First two dimensions represent the parameters involved in partial derivs
-  g_hess <- function(theta)
-  {
+  g_hess <- function(theta) {
     if (length(theta) != (size - 1))
       stop("theta is not equal to (size - 1) in chain()")
     th <- t(array(c(theta, (1 - sum(theta))), c(size, size)))

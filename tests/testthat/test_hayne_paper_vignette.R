@@ -297,7 +297,7 @@ test_that("reserve estimates are finite and calculable", {
     method = "BFGS"
   )
 
-  params_chain <- fit_chain$par[1:length(a0_chain)]
+  params_chain <- fit_chain$par[seq_along(a0_chain)]
   E_chain <- g_chain(params_chain)
   reserve <- sum(E_chain[lower_mask], na.rm = TRUE)
 

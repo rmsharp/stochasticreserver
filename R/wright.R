@@ -107,10 +107,10 @@ wright <- function(B0, paid_to_date, upper_triangle_mask) {
   a0 <- c(log(uv / rowSums(exp(
     ccs[2] * tau + ccs[3] * tau ^ 2 + ccs[4] * log(tau)
   ))), ccs[2:4])
-  return(list(
+  list(
     g_obj = g_obj,
     g_grad = g_grad,
     g_hess = g_hess,
     a0 = a0
-  ))
+  )
 }

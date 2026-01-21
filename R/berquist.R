@@ -89,5 +89,5 @@ berquist <- function(B0, paid_to_date, upper_triangle_mask) {
   # trd = 0.01 # nolint: commented_code_linter.
   trd <- array(coef(lm(tmp$y ~ tmp$x))[2])[1]
   a0 <- c((xx * mean(uv / (exp(trd)^(1:size)))), trd)
-  return(list(g_obj = g_obj, g_grad = g_grad, g_hess = g_hess, a0 = a0))
+  list(g_obj = g_obj, g_grad = g_grad, g_hess = g_hess, a0 = a0)
 }

@@ -230,4 +230,3 @@ test_that("g_hess errors on wrong length theta", {
   expect_error(g_hess(wrong_theta),
                "theta is not equal to \\(size \\+ 1\\) in berquist\\(\\)")
 })
-

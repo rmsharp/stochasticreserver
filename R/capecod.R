@@ -107,10 +107,10 @@ capecod <- function(B0, paid_to_date, upper_triangle_mask) {
                           (size > rowSums(upper_triangle_mask)) *
                           rowSums(upper_triangle_mask * ww))
   a0 <- c((uv[1] * xx[1]), (uv[2:size] / uv[1]), (xx[2:size] / xx[1]))
-  return(list(
+  list(
     g_obj = g_obj,
     g_grad = g_grad,
     g_hess = g_hess,
     a0 = a0
-  ))
+  )
 }
