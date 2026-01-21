@@ -1,3 +1,4 @@
+# nolint start: line_length_linter.
 berquist_yyy <- structure(c(18.5903477820371, 17.0857629741298, 16.4587546640197,
                             19.5555511727509, 18.3251047554907, 17.7498111021868, 19.2022607846289,
                             19.5371976228424, 20.0849340151416, 21.0357586325281, 18.2296970960545,
@@ -47,6 +48,7 @@ berquist_a0 <- c(709.002597747623, 836.727551631865, 747.948774807513, 591.86672
                  377.511642512502, 202.094145898798, 77.2728598811514, 43.5550638201962,
                  14.0727769958082, 21.247024040686, 0.0226784826650085, 10.1469982236692,
                  0.674215930439166)
+# nolint end
 B0 <- stochasticreserver::B0
 A0 <- stochasticreserver::A0
 dnom <- stochasticreserver::dnom
@@ -57,8 +59,8 @@ colNum <- col(A0)
 # Generate a matrix to reflect exposure count in the variance structure
 logd <- log(matrix(dnom, size, size))
 
-#. upper_triangle_mask is a mask matrix of allowable data, upper triangular assuming same
-#' development increments as exposure increments
+# upper_triangle_mask is a mask matrix of allowable data, upper triangular
+# assuming same development increments as exposure increments
 #' msn is a mask matrix that picks off the first forecast diagonal
 #' msd is a mask matrix that picks off the to date diagonal
 upper_triangle_mask <- (size - rowNum) >= colNum - 1
@@ -113,10 +115,10 @@ l.grad <- function(a, A) {
 # -   e is the expectated value matrix
 # -   v is the matrix of variances
 # -   A, e, v all have shape c(size, size)
-# -   The variables _v are copies of the originals to shape c(npar,size,size), paralleling
-# the gradient of g.
-# -   The variables _m are copies of the originals to shape c(npar,npar,size,size),
-# paralleling the hessian of g
+# -   The variables _v are copies of the originals to shape
+#     c(npar,size,size), paralleling the gradient of g.
+# -   The variables _m are copies of the originals to shape
+#     c(npar,npar,size,size), paralleling the hessian of g
 
 
 l.hess <- function(a, A) {
@@ -137,13 +139,14 @@ l.hess <- function(a, A) {
   dtt <- rowSums(
     gh * (p / em + (em - Am) / vm - p * (Am - em) ^ 2 / (vm * em)) +
       gg * (
-        1 / vm + 4 * p * (Am - em) / (vm * em) + p * (2 * p + 1) * (Am - em) ^ 2 /
-          (vm * em ^ 2) - p / em ^ 2
+        1 / vm + 4 * p * (Am - em) / (vm * em) +
+          p * (2 * p + 1) * (Am - em) ^ 2 / (vm * em ^ 2) - p / em ^ 2
       ),
     dims = 2,
     na.rm = TRUE
   )
-  dkt <- rowSums((g1 * (Av - ev) + p * g1 * (Av - ev) ^ 2 / ev) / vv, na.rm = TRUE)
+  dkt <- rowSums(
+    (g1 * (Av - ev) + p * g1 * (Av - ev) ^ 2 / ev) / vv, na.rm = TRUE)
   dtp <- rowSums(g1 * (1 / ev + (
     log(ev ^ 2) * (Av - ev) + (p * log(ev ^ 2) - 1) * (Av - ev) ^ 2 / ev
   ) / vv),

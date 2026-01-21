@@ -16,7 +16,8 @@ test_that("model_description returns correct description for Hoerl", {
 
 test_that("model_description returns correct description for Wright", {
   result <- model_description("Wright")
-  expect_equal(result, "Generalized Hoerl Curve with Individual Accident Year Levels")
+  expected <- "Generalized Hoerl Curve with Individual Accident Year Levels"
+  expect_equal(result, expected)
 })
 
 test_that("model_description returns NULL for unknown model", {

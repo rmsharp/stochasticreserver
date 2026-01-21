@@ -172,7 +172,7 @@ test_that("vignette sections follow paper order: results before comparison", {
   expect_true(results_pos < comparison_pos)
 })
 
-test_that("vignette sections follow paper order: comparison before diagnostics", {
+test_that("vignette sections: comparison before diagnostics", {
   skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
