@@ -27,6 +27,7 @@ Suggests:
     MASS,
     mvtnorm,
     pkgdown,
+    quarto,
     rmarkdown,
     roxygen2 (>= 6.0.0),
     testthat,
@@ -35,6 +36,6 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
-VignetteBuilder: knitr
+VignetteBuilder: knitr, quarto
 ByteCompile: true
 Config/testthat/edition: 3
