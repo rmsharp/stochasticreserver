@@ -17,15 +17,21 @@ bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
+# Check if package is available (handles R CMD check case)
+pkg_available <- requireNamespace("stochasticreserver", quietly = TRUE)
 
+knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
-warning = FALSE,
+  warning = FALSE,
   fig.width = 8,
-  fig.height = 6
+  fig.height = 6,
+  eval = pkg_available
 )
-library(stochasticreserver)
+
+if (pkg_available) {
+  library(stochasticreserver)
+}
 ```
 
 ## Introduction

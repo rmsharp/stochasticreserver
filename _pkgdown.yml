@@ -58,6 +58,8 @@ navbar:
       menu:
       - text: Comprehensive Tutorial
         href: articles/comprehensive_tutorial.html
+      - text: Hayne Paper Reproduction
+        href: articles/hayne_paper_reproduction.html
       - text: Example Stochastic Reserving
         href: articles/stochastic_reserving.html
       - text: Manual
@@ -68,6 +70,7 @@ articles:
   navbar: ~
   contents:
   - comprehensive_tutorial
+  - hayne_paper_reproduction
   - stochastic_reserving
 - title: Reference
   contents:
