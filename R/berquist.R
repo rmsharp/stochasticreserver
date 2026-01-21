@@ -21,13 +21,10 @@
 #' @export
 berquist <- function(B0, paid_to_date, upper_triangle_mask) {
   size <- nrow(B0)
-  g_obj = function(theta) {
-    if (is.vector(theta))
-    {
+  g_obj <- function(theta) {
+    if (is.vector(theta)) {
       outer(exp(theta[(size + 1)] * (1:size)), theta[1:size])
-    }
-    else
-    {
+    } else {
       array(exp(outer(theta[, (size + 1)], (1:size))),
             c(nrow(theta), size, size)) *
         aperm(array(theta[, (1:size)], c(nrow(theta), size, size)), c(1, 3, 2))
@@ -38,7 +35,7 @@ berquist <- function(B0, paid_to_date, upper_triangle_mask) {
   # Note the gradient is a 3-dimensional function of the parameters theta
   # with dimensions (size + 1) (=length(theta)), size, size.
   # The first dimension represents the parameters involved in the derivatives
-  g_grad = function(theta) {
+  g_grad <- function(theta) {
     if (length(theta) != (size + 1))
       stop("theta is not equal to (size + 1) in berquist()")
     abind(aperm(array(rep(
@@ -54,13 +51,13 @@ berquist <- function(B0, paid_to_date, upper_triangle_mask) {
   # with dimensions (size + 1) (=length(theta)), (size + 1), size, size.
   # First two dimensions
   # represent the parameters involved in the partial derivatives
-  g_hess = function(theta)  {
+  g_hess <- function(theta)  {
     if (length(theta) != (size + 1))
       stop("theta is not equal to (size + 1) in berquist()")
-    aa = aperm(outer(diag(rep(1, size)),
-                     array((1:size) * exp((
-                       1:size
-                     ) * theta[(size + 1)]), c(size, 1))), c(1, 4, 3, 2))
+    aa <- aperm(outer(diag(rep(1, size)),
+                      array((1:size) * exp((
+                        1:size
+                      ) * theta[(size + 1)]), c(size, 1))), c(1, 4, 3, 2))
     abind(abind(array(0, c(size, size, size, size)), aa, along = 2),
           abind(aperm(aa, c(2, 1, 3, 4)),
                 array(outer((1:size) ^ 2 * exp((1:size) * theta[(size + 1)]),
@@ -73,24 +70,24 @@ berquist <- function(B0, paid_to_date, upper_triangle_mask) {
   # Set up starting values.  Essentially start with classical chain ladder
   # ultimate estimates and estimate trend from that and incremental average
   # start values based on incrementals from classic chain ladder
-  paid_to_date = ((!paid_to_date == 0) * paid_to_date) + (paid_to_date == 0) *
+  paid_to_date <- ((!paid_to_date == 0) * paid_to_date) + (paid_to_date == 0) *
     mean(paid_to_date)
-  tmp = c((
+  tmp <- c((
     colSums(B0[, 2:size] + 0 * B0[, 1:(size - 1)], na.rm = TRUE) /
       colSums(B0[, 1:(size - 1)] + 0 * B0[, 2:size], na.rm = TRUE)
   ),
   1)
-  yy = 1 / (cumprod(tmp[(size + 1) - (1:size)]))[(size + 1) - (1:size)]
-  xx = yy - c(0, yy[1:(size - 1)])
-  ww = t(array(xx, c(size, size)))
-  uv = paid_to_date / ((size == rowSums(upper_triangle_mask)) +
+  yy <- 1 / (cumprod(tmp[(size + 1) - (1:size)]))[(size + 1) - (1:size)]
+  xx <- yy - c(0, yy[1:(size - 1)])
+  ww <- t(array(xx, c(size, size)))
+  uv <- paid_to_date / ((size == rowSums(upper_triangle_mask)) +
                          (size > rowSums(upper_triangle_mask)) *
                          rowSums(upper_triangle_mask * ww))
-  tmp = na.omit(data.frame(x = 1:size, y = log(uv)))
+  tmp <- na.omit(data.frame(x = 1:size, y = log(uv)))
   # The next lines is an error in original published code as it is immediately
   # overwritten; at this point it is left in for historical purposes.
   # trd = 0.01 # nolint: commented_code_linter.
-  trd = array(coef(lm(tmp$y ~ tmp$x))[2])[1]
-  a0 = c((xx * mean(uv / (exp(trd)^(1:size)))), trd)
+  trd <- array(coef(lm(tmp$y ~ tmp$x))[2])[1]
+  a0 <- c((xx * mean(uv / (exp(trd)^(1:size)))), trd)
   return(list(g_obj = g_obj, g_grad = g_grad, g_hess = g_hess, a0 = a0))
 }

@@ -21,14 +21,11 @@
 #' @export
 capecod <- function(B0, paid_to_date, upper_triangle_mask) {
   size <- nrow(B0)
-  g_obj = function(theta) {
-    if (is.vector(theta))
-    {
+  g_obj <- function(theta) {
+    if (is.vector(theta)) {
       theta[1] * outer((c(1, theta[2:size])),
                        c(1, theta[(size + 1):((2 * size) - 1)]))
-    }
-    else
-    {
+    } else {
       array(theta[, 1], c(nrow(theta), size, size)) *
         array(cbind(1, theta[, 2:size]), c(nrow(theta), size, size)) *
         aperm(array(cbind(1, theta[, (size + 1):((2 * size) - 1)]),
@@ -40,7 +37,7 @@ capecod <- function(B0, paid_to_date, upper_triangle_mask) {
   # Note the gradient is a 3-dimensional function of the parameters theta
   # with dimensions ((size * 2) - 1) (=length(theta)), size, size.  The first
   # dimension represents the parameters involved in the derivatives
-  g_grad = function(theta) {
+  g_grad <- function(theta) {
     abind(outer(c(1, theta[2:size]), c(1, theta[(size + 1):((2 * size) - 1)])),
           theta[1] *
             abind(
@@ -64,8 +61,8 @@ capecod <- function(B0, paid_to_date, upper_triangle_mask) {
   # with dimensions ((size * 2) - 1) (=length(theta)), ((size * 2) - 1),
   # size, size.  First two dimensions
   # represent the parameters involved in the partial derivatives
-  g_hess = function(theta)  {
-    a1 = abind(aperm(array(t(
+  g_hess <- function(theta)  {
+    a1 <- abind(aperm(array(t(
       outer((2:size), (1:size), "==")
     ), c(size, size - 1, size)), c(2, 1, 3)) *
       aperm(array(c(1, theta[(size + 1):((2 * size) - 1)]),
@@ -75,7 +72,7 @@ capecod <- function(B0, paid_to_date, upper_triangle_mask) {
     ), c(size, size - 1, size)), c(2, 3, 1)) *
       aperm(array(c(1, theta[2:size]), c(size, size, size - 1)), c(3, 1, 2)),
     along = 1)
-    a2 = theta[1] * (aperm(array(1:size, c(size, size, size - 1, size - 1)),
+    a2 <- theta[1] * (aperm(array(1:size, c(size, size, size - 1, size - 1)),
                            c(3, 4, 1, 2)) ==
                        array(2:size, c(size - 1, size - 1, size, size))) *
       (aperm(array(1:size, c(size, size, size - 1, size - 1)),
@@ -96,20 +93,20 @@ capecod <- function(B0, paid_to_date, upper_triangle_mask) {
 
   # Set up starting values based on development factors for columns and
   # relative sizes for rows
-  paid_to_date = ((!paid_to_date == 0) * paid_to_date) + (paid_to_date == 0) *
+  paid_to_date <- ((!paid_to_date == 0) * paid_to_date) + (paid_to_date == 0) *
     mean(paid_to_date)
-  tmp = c((
+  tmp <- c((
     colSums(B0[, 2:size] + 0 * B0[, 1:(size - 1)], na.rm = TRUE) /
       colSums(B0[, 1:(size - 1)] + 0 * B0[, 2:size], na.rm = TRUE)
   ),
   1)
-  yy = 1 / (cumprod(tmp[11 - (1:size)]))[11 - (1:size)]
-  xx = yy - c(0, yy[1:(size - 1)])
-  ww = t(array(xx, c(size, size)))
-  uv = paid_to_date / ((size == rowSums(upper_triangle_mask)) +
-                         (size > rowSums(upper_triangle_mask)) *
-                         rowSums(upper_triangle_mask * ww))
-  a0 = c((uv[1] * xx[1]), (uv[2:size] / uv[1]), (xx[2:size] / xx[1]))
+  yy <- 1 / (cumprod(tmp[11 - (1:size)]))[11 - (1:size)]
+  xx <- yy - c(0, yy[1:(size - 1)])
+  ww <- t(array(xx, c(size, size)))
+  uv <- paid_to_date / ((size == rowSums(upper_triangle_mask)) +
+                          (size > rowSums(upper_triangle_mask)) *
+                          rowSums(upper_triangle_mask * ww))
+  a0 <- c((uv[1] * xx[1]), (uv[2:size] / uv[1]), (xx[2:size] / xx[1]))
   return(list(
     g_obj = g_obj,
     g_grad = g_grad,

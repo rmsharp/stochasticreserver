@@ -20,19 +20,16 @@ hoerl <- function(B0, paid_to_date, upper_triangle_mask) {
   size <- nrow(B0)
   # Set tau (representing operational time) to have columns with entries 1
   # through size
-  tau = t(array((1:size), c(size, size)))
+  tau <- t(array((1:size), c(size, size)))
   g_obj <- function(theta) {
-    if (is.vector(theta))
-    {
+    if (is.vector(theta)) {
       exp(theta[1] +
             colSums(abind(
               tau, abind(tau ^ 2, log(tau), along = 0.5), along = 1
             ) *
               array(theta[c(2, 3, 4)], c(3, size, size))) +
             theta[5] * array((1:size), c(size, size)))
-    }
-    else
-    {
+    } else {
       exp(
         array(theta[, 1], c(nrow(theta), size, size)) +
           colSums(abind(
@@ -81,7 +78,7 @@ hoerl <- function(B0, paid_to_date, upper_triangle_mask) {
   g_hess <- function(theta)  {
     if (length(theta) != 5)
       stop("theta does not equal 5 in hoerl()")
-    aa = aperm(array(abind(
+    aa <- aperm(array(abind(
       array(1, c(size, size)),
       abind(tau, abind(
         tau ^ 2,
@@ -100,30 +97,30 @@ hoerl <- function(B0, paid_to_date, upper_triangle_mask) {
   }
 
   # Base starting values on classic chain ladder forecasts and inherent trend
-  paid_to_date = ((!paid_to_date == 0) * paid_to_date) + (paid_to_date == 0) *
+  paid_to_date <- ((!paid_to_date == 0) * paid_to_date) + (paid_to_date == 0) *
     mean(paid_to_date)
-  tmp = c((
+  tmp <- c((
     colSums(B0[, 2:size] + 0 * B0[, 1:(size - 1)], na.rm = TRUE) /
       colSums(B0[, 1:(size - 1)] + 0 * B0[, 2:size], na.rm = TRUE)
   ),
   1)
-  yy = 1 / (cumprod(tmp[(size + 1) - (1:size)]))[(size + 1) - (1:size)]
-  xx = yy - c(0, yy[1:(size - 1)])
-  ww = t(array(xx, c(size, size)))
-  uv = paid_to_date / ((size == rowSums(upper_triangle_mask)) +
-                         (size > rowSums(upper_triangle_mask)) *
-                         rowSums(upper_triangle_mask * ww))
-  tmp = na.omit(data.frame(x = 1:size, y = log(uv)))
-  trd = 0.01
-  trd = array(coef(lm(tmp$y ~ tmp$x))[2])[1]
-  tmp = na.omit(data.frame(
+  yy <- 1 / (cumprod(tmp[(size + 1) - (1:size)]))[(size + 1) - (1:size)]
+  xx <- yy - c(0, yy[1:(size - 1)])
+  ww <- t(array(xx, c(size, size)))
+  uv <- paid_to_date / ((size == rowSums(upper_triangle_mask)) +
+                          (size > rowSums(upper_triangle_mask)) *
+                          rowSums(upper_triangle_mask * ww))
+  tmp <- na.omit(data.frame(x = 1:size, y = log(uv)))
+  trd <- 0.01
+  trd <- array(coef(lm(tmp$y ~ tmp$x))[2])[1]
+  tmp <- na.omit(data.frame(
     x1 = c(tau),
     x2 = c(tau ^ 2),
     x3 = log(c(tau)),
     y = c(log(outer(uv, xx)))
   ))
-  ccs = array(coef(lm(tmp$y ~ tmp$x1 + tmp$x2 + tmp$x3)))[1:4]
-  a0 = c(c(ccs), trd)
+  ccs <- array(coef(lm(tmp$y ~ tmp$x1 + tmp$x2 + tmp$x3)))[1:4]
+  a0 <- c(c(ccs), trd)
   return(list(
     g_obj = g_obj,
     g_grad = g_grad,

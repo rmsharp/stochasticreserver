@@ -52,20 +52,20 @@ A0 <- stochasticreserver::A0
 dnom <- stochasticreserver::dnom
 size <- nrow(B0)
 # Set up matrix of rows and columns, makes later calculations simpler
-rowNum = row(A0)
-colNum = col(A0)
+rowNum <- row(A0)
+colNum <- col(A0)
 # Generate a matrix to reflect exposure count in the variance structure
-logd = log(matrix(dnom, size, size))
+logd <- log(matrix(dnom, size, size))
 
 #. upper_triangle_mask is a mask matrix of allowable data, upper triangular assuming same
 #' development increments as exposure increments
 #' msn is a mask matrix that picks off the first forecast diagonal
 #' msd is a mask matrix that picks off the to date diagonal
-upper_triangle_mask = (size - rowNum) >= colNum - 1
-msd = (size - rowNum) == colNum - 1
+upper_triangle_mask <- (size - rowNum) >= colNum - 1
+msd <- (size - rowNum) == colNum - 1
 
 # Amount paid to date
-paid_to_date = rowSums(B0 * msd, na.rm = TRUE)
+paid_to_date <- rowSums(B0 * msd, na.rm = TRUE)
 model_lst <- berquist(B0, paid_to_date, upper_triangle_mask)
 g_obj <- model_lst$g_obj
 g_grad <- model_lst$g_grad
@@ -81,30 +81,30 @@ a0 <- model_lst$a0
 # columns of data, the total objective function has k + size + 1 parameters
 
 
-l.obj = function(a, A) {
-  npar = length(a) - 2
-  e = g_obj(a[1:npar])
-  v = exp(-outer(logd[, 1], rep(a[npar + 1], size), "-")) * (e^2)^a[npar + 2]
-  t1 = log(2 * pi * v) / 2
-  t2 = (A - e) ^ 2 / (2 * v)
+l.obj <- function(a, A) {
+  npar <- length(a) - 2
+  e <- g_obj(a[1:npar])
+  v <- exp(-outer(logd[, 1], rep(a[npar + 1], size), "-")) * (e^2)^a[npar + 2]
+  t1 <- log(2 * pi * v) / 2
+  t2 <- (A - e) ^ 2 / (2 * v)
   sum(t1 + t2, na.rm = TRUE)
 }
 # Gradient of the objective function
-l.grad = function(a, A) {
-  npar = length(a) - 2
-  p = a[npar + 2]
-  Av = aperm(array(A, c(size, size, npar)), c(3, 1, 2))
-  e = g_obj(a[1:npar])
-  ev = aperm(array(e, c(size, size, npar)), c(3, 1, 2))
-  v = exp(-outer(logd[, 1], rep(a[npar + 1], size), "-")) * (e^2)^p
-  vv = aperm(array(v, c(size, size, npar)), c(3, 1, 2))
-  dt = rowSums(g_grad(a[1:npar]) * ((p / ev) + (ev - Av) / vv - p *
-                                      (Av - ev)^2 / (vv * ev)),
-               na.rm = TRUE,
-               dims = 1)
-  yy = 1 - (A - e) ^ 2 / v
-  dk = sum(yy / 2, na.rm = TRUE)
-  dp = sum(yy * log(e ^ 2) / 2, na.rm = TRUE)
+l.grad <- function(a, A) {
+  npar <- length(a) - 2
+  p <- a[npar + 2]
+  Av <- aperm(array(A, c(size, size, npar)), c(3, 1, 2))
+  e <- g_obj(a[1:npar])
+  ev <- aperm(array(e, c(size, size, npar)), c(3, 1, 2))
+  v <- exp(-outer(logd[, 1], rep(a[npar + 1], size), "-")) * (e^2)^p
+  vv <- aperm(array(v, c(size, size, npar)), c(3, 1, 2))
+  dt <- rowSums(g_grad(a[1:npar]) * ((p / ev) + (ev - Av) / vv - p *
+                                       (Av - ev)^2 / (vv * ev)),
+                na.rm = TRUE,
+                dims = 1)
+  yy <- 1 - (A - e) ^ 2 / v
+  dk <- sum(yy / 2, na.rm = TRUE)
+  dp <- sum(yy * log(e ^ 2) / 2, na.rm = TRUE)
   c(dt, dk, dp)
 }
 
@@ -119,22 +119,22 @@ l.grad = function(a, A) {
 # paralleling the hessian of g
 
 
-l.hess = function(a, A) {
-  npar = length(a) - 2
-  p = a[npar + 2]
-  Av = aperm(array(A, c(size, size, npar)), c(3, 1, 2))
-  Am = aperm(array(A, c(size, size, npar, npar)), c(3, 4, 1, 2))
-  e = g_obj(a[1:npar])
-  ev = aperm(array(e, c(size, size, npar)), c(3, 1, 2))
-  em = aperm(array(e, c(size, size, npar, npar)), c(3, 4, 1, 2))
-  v = exp(-outer(logd[, 1], rep(a[npar + 1], size), "-")) * (e ^ 2) ^ p
-  vv = aperm(array(v, c(size, size, npar)), c(3, 1, 2))
-  vm = aperm(array(v, c(size, size, npar, npar)), c(3, 4, 1, 2))
-  g1 = g_grad(a[1:npar])
-  gg = aperm(array(g1, c(npar, size, size, npar)), c(4, 1, 2, 3))
-  gg = gg * aperm(gg, c(2, 1, 3, 4))
-  gh = g_hess(a[1:npar])
-  dtt = rowSums(
+l.hess <- function(a, A) {
+  npar <- length(a) - 2
+  p <- a[npar + 2]
+  Av <- aperm(array(A, c(size, size, npar)), c(3, 1, 2))
+  Am <- aperm(array(A, c(size, size, npar, npar)), c(3, 4, 1, 2))
+  e <- g_obj(a[1:npar])
+  ev <- aperm(array(e, c(size, size, npar)), c(3, 1, 2))
+  em <- aperm(array(e, c(size, size, npar, npar)), c(3, 4, 1, 2))
+  v <- exp(-outer(logd[, 1], rep(a[npar + 1], size), "-")) * (e ^ 2) ^ p
+  vv <- aperm(array(v, c(size, size, npar)), c(3, 1, 2))
+  vm <- aperm(array(v, c(size, size, npar, npar)), c(3, 4, 1, 2))
+  g1 <- g_grad(a[1:npar])
+  gg <- aperm(array(g1, c(npar, size, size, npar)), c(4, 1, 2, 3))
+  gg <- gg * aperm(gg, c(2, 1, 3, 4))
+  gh <- g_hess(a[1:npar])
+  dtt <- rowSums(
     gh * (p / em + (em - Am) / vm - p * (Am - em) ^ 2 / (vm * em)) +
       gg * (
         1 / vm + 4 * p * (Am - em) / (vm * em) + p * (2 * p + 1) * (Am - em) ^ 2 /
@@ -143,15 +143,15 @@ l.hess = function(a, A) {
     dims = 2,
     na.rm = TRUE
   )
-  dkt = rowSums((g1 * (Av - ev) + p * g1 * (Av - ev) ^ 2 / ev) / vv, na.rm = TRUE)
-  dtp = rowSums(g1 * (1 / ev + (
+  dkt <- rowSums((g1 * (Av - ev) + p * g1 * (Av - ev) ^ 2 / ev) / vv, na.rm = TRUE)
+  dtp <- rowSums(g1 * (1 / ev + (
     log(ev ^ 2) * (Av - ev) + (p * log(ev ^ 2) - 1) * (Av - ev) ^ 2 / ev
   ) / vv),
   na.rm = TRUE)
-  dkk = sum((A - e) ^ 2 / (2 * v), na.rm = TRUE)
-  dpk = sum(log(e ^ 2) * (A - e) ^ 2 / (2 * v), na.rm = TRUE)
-  dpp = sum(log(e ^ 2) ^ 2 * (A - e) ^ 2 / (2 * v), na.rm = TRUE)
-  m1 = rbind(array(dkt), c(dtp))
+  dkk <- sum((A - e) ^ 2 / (2 * v), na.rm = TRUE)
+  dpk <- sum(log(e ^ 2) * (A - e) ^ 2 / (2 * v), na.rm = TRUE)
+  dpp <- sum(log(e ^ 2) ^ 2 * (A - e) ^ 2 / (2 * v), na.rm = TRUE)
+  m1 <- rbind(array(dkt), c(dtp))
   rbind(cbind(dtt, t(m1)), cbind(m1, rbind(cbind(dkk, c(
     dpk
   )), c(dpk, dpp))))
@@ -164,7 +164,7 @@ l.hess = function(a, A) {
 
 ### Get starting values for kappa and p parameters, default 10 and 1
 
-ttt = c(10, 1)
+ttt <- c(10, 1)
 
 # For starting values use fitted objective function and assume variance for a
 # cell is estimated by the square of the difference between actual and expected
@@ -172,12 +172,12 @@ ttt = c(10, 1)
 # to prep the y values for the fit
 
 # ```{r minimization-setup}
-E = g_obj(a0)
-yyy = (A0 - E)^2
-yyy = logd + log(((yyy != 0) * yyy) - (yyy == 0))
-sss = na.omit(data.frame(x = c(log(E^2)), y = c(yyy)))
-ttt = array(coef(lm(sss$y ~ sss$x)))[1:2]
-a0 = c(a0, ttt)
+E <- g_obj(a0)
+yyy <- (A0 - E)^2
+yyy <- logd + log(((yyy != 0) * yyy) - (yyy == 0))
+sss <- na.omit(data.frame(x = c(log(E^2)), y = c(yyy)))
+ttt <- array(coef(lm(sss$y ~ sss$x)))[1:2]
+a0 <- c(a0, ttt)
 
 test_that("berquist returns the correct vector", {
   expect_equal(berquist_a0, a0)
