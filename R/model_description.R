@@ -13,7 +13,7 @@ model_description <- function(model) {
     "Generalized Hoerl Curve Model with Trend"
   } else if (model == "Wright") {
     "Generalized Hoerl Curve with Individual Accident Year Levels"
-  } else if (model == "CapeCod") {
+  } else if (model == "Chain") {
     "Chain Ladder Model"
   }
 }
