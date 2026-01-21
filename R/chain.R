@@ -86,8 +86,11 @@ chain <- function(B0, paid_to_date, upper_triangle_mask) {
   d2 <- aperm(array((1:(size - 1)),
                     c((size - 1), (size - 1), size, size)),
               c(2, 1, 3, 4))
-  d3 <- aperm(array((1:size), c(size, (size - 1), (size - 1), size)),
-              c(2, 3, 1, 4))
+  # nolint start: object_usage_linter
+  # Unused local variablekept for consistency with original code
+  #d3 <- aperm(array((1:size), c(size, (size - 1), (size - 1), size)),
+  #            c(2, 3, 1, 4))
+  # nolint end
   d4 <- aperm(array((1:size), c(size, (size - 1), (size - 1), size)),
               c(2, 3, 4, 1))
   rsma <- aperm(array(rsm, c(size, (size - 1), (size - 1), size)),
