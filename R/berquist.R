@@ -40,7 +40,7 @@ berquist <- function(B0, paid_to_date, upper_triangle_mask) {
   # The first dimension represents the parameters involved in the derivatives
   g_grad = function(theta) {
     if (length(theta) != (size + 1))
-      stop("theta is not equal to (size - 1) in berquist()")
+      stop("theta is not equal to (size + 1) in berquist()")
     abind(aperm(array(rep(
       exp(theta[(size + 1)] * (1:size)), size * size * size
     ), c(size, size, size)), c(2, 1, 3)) *
@@ -56,7 +56,7 @@ berquist <- function(B0, paid_to_date, upper_triangle_mask) {
   # represent the parameters involved in the partial derivatives
   g_hess = function(theta)  {
     if (length(theta) != (size + 1))
-      stop("theta is not equal to (size - 1) in berquist()")
+      stop("theta is not equal to (size + 1) in berquist()")
     aa = aperm(outer(diag(rep(1, size)),
                      array((1:size) * exp((
                        1:size
@@ -87,7 +87,9 @@ berquist <- function(B0, paid_to_date, upper_triangle_mask) {
                          (size > rowSums(upper_triangle_mask)) *
                          rowSums(upper_triangle_mask * ww))
   tmp = na.omit(data.frame(x = 1:size, y = log(uv)))
-  trd = 0.01
+  # The next lines is an error in original published code as it is immediately
+  # overwritten; at this point it is left in for historical purposes.
+  # trd = 0.01 # nolint: commented_code_linter.
   trd = array(coef(lm(tmp$y ~ tmp$x))[2])[1]
   a0 = c((xx * mean(uv / (exp(trd)^(1:size)))), trd)
   return(list(g_obj = g_obj, g_grad = g_grad, g_hess = g_hess, a0 = a0))

@@ -187,3 +187,47 @@ test_that("berquist functions are correctly formed", {
   expect_equal(E, berquist_E)
 })
 
+# Test g_obj with matrix input (simulation case)
+test_that("g_obj handles matrix input for simulations", {
+  # Create a matrix of parameters (3 simulations)
+  theta_vector <- a0[1:(size + 1)]
+  theta_matrix <- rbind(theta_vector,
+                        theta_vector * 1.01,
+                        theta_vector * 0.99)
+
+  # Test that matrix input returns 3D array
+
+  result_matrix <- g_obj(theta_matrix)
+  expect_true(is.array(result_matrix))
+  expect_equal(length(dim(result_matrix)), 3)
+  expect_equal(dim(result_matrix), c(3, size, size))
+
+  # Test consistency: first row of matrix result should match vector result
+  result_vector <- g_obj(theta_vector)
+  expect_equal(result_matrix[1, , ], result_vector, tolerance = 1e-10)
+})
+
+test_that("g_obj matrix and vector results are consistent", {
+  # Single row matrix should give same result as vector
+  theta_vector <- a0[1:(size + 1)]
+  theta_single_row <- matrix(theta_vector, nrow = 1)
+
+  result_vector <- g_obj(theta_vector)
+  result_single <- g_obj(theta_single_row)
+
+  expect_equal(dim(result_single), c(1, size, size))
+  expect_equal(result_single[1, , ], result_vector, tolerance = 1e-10)
+})
+
+test_that("g_grad errors on wrong length theta", {
+  wrong_theta <- a0[1:size]  # Missing one parameter
+  expect_error(g_grad(wrong_theta),
+               "theta is not equal to \\(size \\+ 1\\) in berquist\\(\\)")
+})
+
+test_that("g_hess errors on wrong length theta", {
+  wrong_theta <- a0[1:size]  # Missing one parameter
+  expect_error(g_hess(wrong_theta),
+               "theta is not equal to \\(size \\+ 1\\) in berquist\\(\\)")
+})
+
