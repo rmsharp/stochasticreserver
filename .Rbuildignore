@@ -35,3 +35,4 @@ inst/extdata/presentations/.*\.html$
 inst/extdata/presentations/.*_files$
 ^lib$
 ^codecov\.yml$
+^CLAUDE\.md$
