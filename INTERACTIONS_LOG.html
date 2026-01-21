@@ -686,6 +686,55 @@ Co-Authored-By: Claude Opus 4.5 &lt;noreply@anthropic.com&gt;</code></pre>
 <p><strong>Commit:</strong> <code>4203a4f</code> - Add link to Hayne paper in comprehensive tutorial</p>
 <p><strong>Status:</strong> Completed</p>
 <hr></div>
+<div class="section level3">
+<h3 id="request-14-add-cas-pdf-link">Request 14: Add CAS PDF Link<a class="anchor" aria-label="anchor" href="#request-14-add-cas-pdf-link"></a></h3>
+<p><strong>Prompt:</strong> Add alternative link to Hayne paper (CAS PDF)</p>
+<p><strong>Actions Completed:</strong></p>
+<p>Added CAS PDF link as alternative reference in <code>vignettes/comprehensive_tutorial.Rmd</code>: - Primary: variancejournal.org/article/120823 - Alternative: casact.org PDF (more reliable)</p>
+<p><strong>Commit:</strong> <code>0ee43db</code> - Add CAS PDF link as alternative reference to Hayne paper</p>
+<p><strong>Status:</strong> Completed</p>
+<hr></div>
+<div class="section level3">
+<h3 id="request-15-fix-model_description-unreachable-code">Request 15: Fix model_description Unreachable Code<a class="anchor" aria-label="anchor" href="#request-15-fix-model_description-unreachable-code"></a></h3>
+<p><strong>Prompt:</strong> Fix unreachable code in R/model_description.R</p>
+<p><strong>Actions Completed:</strong></p>
+<p>Fixed logical error where “CapeCod” was duplicated instead of “Chain”: - Line 16: <code>else if (model == "CapeCod")</code> → <code>else if (model == "Chain")</code> - The Chain Ladder case was previously unreachable</p>
+<p><strong>Commit:</strong> <code>638c078</code> - Fix unreachable code in model_description: CapeCod -&gt; Chain</p>
+<p><strong>Status:</strong> Completed</p>
+<hr></div>
+<div class="section level3">
+<h3 id="request-16-fix-berquist-bugs-and-add-comprehensive-tests">Request 16: Fix berquist Bugs and Add Comprehensive Tests<a class="anchor" aria-label="anchor" href="#request-16-fix-berquist-bugs-and-add-comprehensive-tests"></a></h3>
+<p><strong>Prompt:</strong> Add tests for unreachable code in R/berquist.R; fix error messages</p>
+<p><strong>Issues Identified:</strong></p>
+<ol style="list-style-type: decimal"><li>
+<strong>g_obj else branch untested</strong> - Matrix input case for simulations never tested</li>
+<li>
+<strong>g_grad/g_hess error handling untested</strong> - stop() calls never triggered</li>
+<li>
+<strong>Incorrect error messages</strong> - Said “(size - 1)” but condition checks “(size + 1)”</li>
+<li>
+<strong>Dead code</strong> - <code>trd = 0.01</code> immediately overwritten (original paper error)</li>
+</ol><p><strong>Actions Completed:</strong></p>
+<div class="section level4">
+<h4 id="rberquistr-fixes">R/berquist.R Fixes:<a class="anchor" aria-label="anchor" href="#rberquistr-fixes"></a></h4>
+<ul><li>Fixed error messages: <code>"(size - 1)"</code> → <code>"(size + 1)"</code> (lines 43, 59)</li>
+<li>Commented out dead code with historical note and nolint directive</li>
+</ul></div>
+<div class="section level4">
+<h4 id="teststestthattest_berquistr-additions">tests/testthat/test_berquist.R Additions:<a class="anchor" aria-label="anchor" href="#teststestthattest_berquistr-additions"></a></h4>
+<ul><li>
+<code>g_obj</code> handles matrix input for simulations (else branch)</li>
+<li>
+<code>g_obj</code> matrix and vector results are consistent</li>
+<li>
+<code>g_grad</code> errors on wrong length theta</li>
+<li>
+<code>g_hess</code> errors on wrong length theta</li>
+</ul><p><strong>Test Count:</strong> 85 → 93</p>
+<p><strong>Commit:</strong> <code>62d1ae3</code> - Fix berquist bugs and add comprehensive tests</p>
+<p><strong>Status:</strong> Completed</p>
+<hr></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="session-commits-summary">Session Commits Summary<a class="anchor" aria-label="anchor" href="#session-commits-summary"></a></h2>
@@ -707,6 +756,14 @@ Co-Authored-By: Claude Opus 4.5 &lt;noreply@anthropic.com&gt;</code></pre>
 <td>Split CRAN Issues Fixed slide into two slides</td>
 </tr><tr class="even"><td>4203a4f</td>
 <td>Add link to Hayne paper in comprehensive tutorial</td>
+</tr><tr class="odd"><td>43834e1</td>
+<td>Update INTERACTIONS_LOG and presentation</td>
+</tr><tr class="even"><td>0ee43db</td>
+<td>Add CAS PDF link as alternative reference</td>
+</tr><tr class="odd"><td>638c078</td>
+<td>Fix unreachable code in model_description</td>
+</tr><tr class="even"><td>62d1ae3</td>
+<td>Fix berquist bugs and add comprehensive tests</td>
 </tr></tbody></table></div>
 </div>
 
