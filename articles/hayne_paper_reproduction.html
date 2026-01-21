@@ -242,40 +242,51 @@
 <span>  <span class="va">cumulative</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">B0</span><span class="op">[</span>, <span class="va">j</span><span class="op">]</span><span class="op">)</span>, <span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
 <span><span class="op">}</span></span>
 <span></span>
+<span><span class="co"># Add Accident Year as row names</span></span>
+<span><span class="va">cumulative_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">cumulative</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">cumulative_df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"AY "</span>, <span class="fl">1</span><span class="op">:</span><span class="va">size</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Column names as Months of Development (12, 24, 36, ...)</span></span>
+<span><span class="va">months_dev</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">12</span> <span class="op">*</span> <span class="va">size</span>, by <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">cumulative</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">cumulative_df</span>, <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  caption <span class="op">=</span> <span class="st">"Table 1: Cumulative Development Triangle"</span>,</span>
-<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Lag "</span>, <span class="fl">1</span><span class="op">:</span><span class="va">size</span><span class="op">)</span></span>
+<span>  col.names <span class="op">=</span> <span class="va">months_dev</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<table class="table caption-top" style="width:100%;">
+<table class="table caption-top">
 <caption>Table 1: Cumulative Development Triangle</caption>
 <colgroup>
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 8%">
+<col style="width: 8%">
 <col style="width: 8%">
 <col style="width: 9%">
 <col style="width: 9%">
 <col style="width: 9%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
 </colgroup>
 <thead><tr class="header">
-<th style="text-align: right;">Lag 1</th>
-<th style="text-align: right;">Lag 2</th>
-<th style="text-align: right;">Lag 3</th>
-<th style="text-align: right;">Lag 4</th>
-<th style="text-align: right;">Lag 5</th>
-<th style="text-align: right;">Lag 6</th>
-<th style="text-align: right;">Lag 7</th>
-<th style="text-align: right;">Lag 8</th>
-<th style="text-align: right;">Lag 9</th>
-<th style="text-align: right;">Lag 10</th>
+<th style="text-align: left;"></th>
+<th style="text-align: right;">12</th>
+<th style="text-align: right;">24</th>
+<th style="text-align: right;">36</th>
+<th style="text-align: right;">48</th>
+<th style="text-align: right;">60</th>
+<th style="text-align: right;">72</th>
+<th style="text-align: right;">84</th>
+<th style="text-align: right;">96</th>
+<th style="text-align: right;">108</th>
+<th style="text-align: right;">120</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: left;">AY 1</td>
 <td style="text-align: right;">670.26</td>
 <td style="text-align: right;">2150.51</td>
 <td style="text-align: right;">4089.04</td>
@@ -288,6 +299,7 @@
 <td style="text-align: right;">24885.91</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">AY 2</td>
 <td style="text-align: right;">767.99</td>
 <td style="text-align: right;">2360.49</td>
 <td style="text-align: right;">4824.29</td>
@@ -300,6 +312,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">AY 3</td>
 <td style="text-align: right;">740.58</td>
 <td style="text-align: right;">2356.38</td>
 <td style="text-align: right;">4702.23</td>
@@ -312,6 +325,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">AY 4</td>
 <td style="text-align: right;">862.12</td>
 <td style="text-align: right;">2617.02</td>
 <td style="text-align: right;">5151.80</td>
@@ -324,6 +338,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">AY 5</td>
 <td style="text-align: right;">840.94</td>
 <td style="text-align: right;">2699.97</td>
 <td style="text-align: right;">5504.51</td>
@@ -336,6 +351,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">AY 6</td>
 <td style="text-align: right;">848.00</td>
 <td style="text-align: right;">2900.93</td>
 <td style="text-align: right;">5977.06</td>
@@ -348,6 +364,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">AY 7</td>
 <td style="text-align: right;">901.77</td>
 <td style="text-align: right;">2829.66</td>
 <td style="text-align: right;">5833.25</td>
@@ -360,6 +377,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">AY 8</td>
 <td style="text-align: right;">935.20</td>
 <td style="text-align: right;">3039.18</td>
 <td style="text-align: right;">6220.93</td>
@@ -372,6 +390,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">AY 9</td>
 <td style="text-align: right;">759.32</td>
 <td style="text-align: right;">2344.24</td>
 <td style="text-align: right;">NA</td>
@@ -384,6 +403,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">AY 10</td>
 <td style="text-align: right;">723.30</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: right;">NA</td>
@@ -404,40 +424,48 @@
 </h3>
 <div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">A0</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="co"># Add Accident Year as row names</span></span>
+<span><span class="va">A0_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">A0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">A0_df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"AY "</span>, <span class="fl">1</span><span class="op">:</span><span class="va">size</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">A0_df</span>, <span class="fl">4</span><span class="op">)</span>,</span>
 <span>  caption <span class="op">=</span> <span class="st">"Incremental Average Amounts (A0)"</span>,</span>
-<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Lag "</span>, <span class="fl">1</span><span class="op">:</span><span class="va">size</span><span class="op">)</span></span>
+<span>  col.names <span class="op">=</span> <span class="va">months_dev</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
 <table class="table caption-top">
 <caption>Incremental Average Amounts (A0)</caption>
 <colgroup>
-<col style="width: 10%">
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 10%">
+<col style="width: 6%">
+<col style="width: 9%">
 <col style="width: 10%">
 <col style="width: 10%">
-<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 9%">
 <col style="width: 8%">
 <col style="width: 8%">
 <col style="width: 8%">
 </colgroup>
 <thead><tr class="header">
-<th style="text-align: right;">Lag 1</th>
-<th style="text-align: right;">Lag 2</th>
-<th style="text-align: right;">Lag 3</th>
-<th style="text-align: right;">Lag 4</th>
-<th style="text-align: right;">Lag 5</th>
-<th style="text-align: right;">Lag 6</th>
-<th style="text-align: right;">Lag 7</th>
-<th style="text-align: right;">Lag 8</th>
-<th style="text-align: right;">Lag 9</th>
-<th style="text-align: right;">Lag 10</th>
+<th style="text-align: left;"></th>
+<th style="text-align: right;">12</th>
+<th style="text-align: right;">24</th>
+<th style="text-align: right;">36</th>
+<th style="text-align: right;">48</th>
+<th style="text-align: right;">60</th>
+<th style="text-align: right;">72</th>
+<th style="text-align: right;">84</th>
+<th style="text-align: right;">96</th>
+<th style="text-align: right;">108</th>
+<th style="text-align: right;">120</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: left;">AY 1</td>
 <td style="text-align: right;">670.2587</td>
 <td style="text-align: right;">809.9895</td>
 <td style="text-align: right;">458.2876</td>
@@ -450,6 +478,7 @@
 <td style="text-align: right;">18.5389</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">AY 2</td>
 <td style="text-align: right;">767.9883</td>
 <td style="text-align: right;">824.5143</td>
 <td style="text-align: right;">871.2918</td>
@@ -462,6 +491,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">AY 3</td>
 <td style="text-align: right;">740.5795</td>
 <td style="text-align: right;">875.2173</td>
 <td style="text-align: right;">730.0535</td>
@@ -474,6 +504,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">AY 4</td>
 <td style="text-align: right;">862.1196</td>
 <td style="text-align: right;">892.7845</td>
 <td style="text-align: right;">779.8732</td>
@@ -486,6 +517,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">AY 5</td>
 <td style="text-align: right;">840.9417</td>
 <td style="text-align: right;">1018.0836</td>
 <td style="text-align: right;">945.5200</td>
@@ -498,6 +530,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">AY 6</td>
 <td style="text-align: right;">848.0050</td>
 <td style="text-align: right;">1204.9170</td>
 <td style="text-align: right;">1023.2159</td>
@@ -510,6 +543,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">AY 7</td>
 <td style="text-align: right;">901.7740</td>
 <td style="text-align: right;">1026.1131</td>
 <td style="text-align: right;">1075.7020</td>
@@ -522,6 +556,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">AY 8</td>
 <td style="text-align: right;">935.1987</td>
 <td style="text-align: right;">1168.7787</td>
 <td style="text-align: right;">1077.7732</td>
@@ -534,6 +569,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">AY 9</td>
 <td style="text-align: right;">759.3247</td>
 <td style="text-align: right;">825.5859</td>
 <td style="text-align: right;">NA</td>
@@ -546,6 +582,7 @@
 <td style="text-align: right;">NA</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">AY 10</td>
 <td style="text-align: right;">723.3028</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: right;">NA</td>
