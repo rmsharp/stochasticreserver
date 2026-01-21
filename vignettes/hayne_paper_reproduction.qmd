@@ -193,20 +193,33 @@ for (j in 2:size) {
   cumulative[is.na(B0[, j]), j] <- NA
 }
 
+# Add Accident Year as row names
+cumulative_df <- as.data.frame(cumulative)
+rownames(cumulative_df) <- paste0("AY ", 1:size)
+
+# Column names as Months of Development (12, 24, 36, ...)
+months_dev <- seq(12, 12 * size, by = 12)
+
 knitr::kable(
-  round(cumulative, 2),
+  round(cumulative_df, 2),
   caption = "Table 1: Cumulative Development Triangle",
-  col.names = paste0("Lag ", 1:size)
+  col.names = months_dev,
+  row.names = TRUE
 )
 ```
 
 ### Incremental Averages
 
 ```{r incremental-averages}
+# Add Accident Year as row names
+A0_df <- as.data.frame(A0)
+rownames(A0_df) <- paste0("AY ", 1:size)
+
 knitr::kable(
-  round(A0, 4),
+  round(A0_df, 4),
   caption = "Incremental Average Amounts (A0)",
-  col.names = paste0("Lag ", 1:size)
+  col.names = months_dev,
+  row.names = TRUE
 )
 ```
 
