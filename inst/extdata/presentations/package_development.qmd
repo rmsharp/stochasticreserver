@@ -262,20 +262,32 @@ All platforms must pass for merge.
 
 ---
 
+## Bugs Fixed During Review
+
+### Code Quality Improvements
+
+| File | Issue | Fix |
+|------|-------|-----|
+| model_description.R | Duplicate "CapeCod" condition | Changed to "Chain" |
+| berquist.R | Wrong error message text | "(size - 1)" → "(size + 1)" |
+| berquist.R | Dead code (trd = 0.01) | Commented with note |
+
+**Tests added:** 85 → 93
+
+---
+
 ## Session Commits
 
-### 8 Commits This Session
+### 12 Commits This Session
 
 | Commit | Description |
 |--------|-------------|
 | faba7f4 | Comprehensive tests, CRAN fixes |
 | 525b777 | Code folding JavaScript |
-| 37161be | Tutorial code folding, chart fonts |
 | 8dad67f | Codecov configuration |
-| 000cd1f | Manual workflow trigger |
-| 21f69eb | Documentation updates |
-| 97ca37e | Split presentation slides |
-| 4203a4f | Tutorial paper link |
+| 0ee43db | CAS PDF link |
+| 638c078 | Fix model_description |
+| 62d1ae3 | Fix berquist bugs |
 
 ---
 

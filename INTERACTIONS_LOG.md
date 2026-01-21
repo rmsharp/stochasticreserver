@@ -685,6 +685,66 @@ clickable link to https://variancejournal.org/article/120823
 
 ---
 
+### Request 14: Add CAS PDF Link
+**Prompt:** Add alternative link to Hayne paper (CAS PDF)
+
+**Actions Completed:**
+
+Added CAS PDF link as alternative reference in `vignettes/comprehensive_tutorial.Rmd`:
+- Primary: variancejournal.org/article/120823
+- Alternative: casact.org PDF (more reliable)
+
+**Commit:** `0ee43db` - Add CAS PDF link as alternative reference to Hayne paper
+
+**Status:** Completed
+
+---
+
+### Request 15: Fix model_description Unreachable Code
+**Prompt:** Fix unreachable code in R/model_description.R
+
+**Actions Completed:**
+
+Fixed logical error where "CapeCod" was duplicated instead of "Chain":
+- Line 16: `else if (model == "CapeCod")` → `else if (model == "Chain")`
+- The Chain Ladder case was previously unreachable
+
+**Commit:** `638c078` - Fix unreachable code in model_description: CapeCod -> Chain
+
+**Status:** Completed
+
+---
+
+### Request 16: Fix berquist Bugs and Add Comprehensive Tests
+**Prompt:** Add tests for unreachable code in R/berquist.R; fix error messages
+
+**Issues Identified:**
+
+1. **g_obj else branch untested** - Matrix input case for simulations never tested
+2. **g_grad/g_hess error handling untested** - stop() calls never triggered
+3. **Incorrect error messages** - Said "(size - 1)" but condition checks "(size + 1)"
+4. **Dead code** - `trd = 0.01` immediately overwritten (original paper error)
+
+**Actions Completed:**
+
+#### R/berquist.R Fixes:
+- Fixed error messages: `"(size - 1)"` → `"(size + 1)"` (lines 43, 59)
+- Commented out dead code with historical note and nolint directive
+
+#### tests/testthat/test_berquist.R Additions:
+- `g_obj` handles matrix input for simulations (else branch)
+- `g_obj` matrix and vector results are consistent
+- `g_grad` errors on wrong length theta
+- `g_hess` errors on wrong length theta
+
+**Test Count:** 85 → 93
+
+**Commit:** `62d1ae3` - Fix berquist bugs and add comprehensive tests
+
+**Status:** Completed
+
+---
+
 ## Session Commits Summary
 
 | Commit | Description |
@@ -697,3 +757,7 @@ clickable link to https://variancejournal.org/article/120823
 | 21f69eb | Update INTERACTIONS_LOG and presentation with CI/CD content |
 | 97ca37e | Split CRAN Issues Fixed slide into two slides |
 | 4203a4f | Add link to Hayne paper in comprehensive tutorial |
+| 43834e1 | Update INTERACTIONS_LOG and presentation |
+| 0ee43db | Add CAS PDF link as alternative reference |
+| 638c078 | Fix unreachable code in model_description |
+| 62d1ae3 | Fix berquist bugs and add comprehensive tests |
