@@ -4,6 +4,7 @@
 .Ruserdata
 vignettes/figure
 vignettes/figure/*
+vignettes/*_files/
 vignettes/*.pdf
 vignettes/*.tex
 vignettes/*.html

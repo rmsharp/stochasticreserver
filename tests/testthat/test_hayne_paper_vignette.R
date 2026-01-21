@@ -1,14 +1,30 @@
 # Tests for the Hayne paper reproduction vignette
 # RED PHASE: These tests define requirements before implementation
 
-vignette_path <- "../../vignettes/hayne_paper_reproduction.qmd"
+# Try multiple paths to find the vignette (works in dev and R CMD check)
+vignette_path <- NULL
+possible_paths <- c(
+  "../../vignettes/hayne_paper_reproduction.qmd",
+  system.file("doc", "hayne_paper_reproduction.qmd",
+              package = "stochasticreserver"),
+  file.path(find.package("stochasticreserver"), "doc",
+            "hayne_paper_reproduction.qmd")
+)
+for (p in possible_paths) {
+  if (file.exists(p)) {
+    vignette_path <- p
+    break
+  }
+}
 
 test_that("hayne_paper_reproduction.qmd vignette exists", {
+  skip_if(is.null(vignette_path),
+          "Vignette not found (expected during R CMD check)")
   expect_true(file.exists(vignette_path))
 })
 
 test_that("vignette has correct Quarto YAML header", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- readLines(vignette_path)
 
   # Check for Quarto format
@@ -19,7 +35,7 @@ test_that("vignette has correct Quarto YAML header", {
 })
 
 test_that("vignette contains theoretical framework section", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   # Must have theoretical framework
@@ -29,7 +45,7 @@ test_that("vignette contains theoretical framework section", {
 })
 
 test_that("vignette contains all five model sections", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
 
@@ -42,7 +58,7 @@ test_that("vignette contains all five model sections", {
 })
 
 test_that("vignette contains mathematical equations", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   # Must have LaTeX math (either $...$ or $$...$$)
@@ -55,7 +71,7 @@ test_that("vignette contains mathematical equations", {
 })
 
 test_that("vignette contains gradient and hessian discussion", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   expect_true(grepl("(?i)gradient", content))
@@ -64,7 +80,7 @@ test_that("vignette contains gradient and hessian discussion", {
 })
 
 test_that("vignette uses package data from Hayne paper", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   # Must reference package data
@@ -73,7 +89,7 @@ test_that("vignette uses package data from Hayne paper", {
 })
 
 test_that("vignette contains tables reproducing paper results", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   # Should have table formatting (markdown tables or kable)
@@ -84,7 +100,7 @@ test_that("vignette contains tables reproducing paper results", {
 })
 
 test_that("vignette contains figures", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   # Must have R code chunks that produce plots
@@ -93,14 +109,14 @@ test_that("vignette contains figures", {
 })
 
 test_that("vignette contains model comparison section", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   expect_true(grepl("(?i)comparison|compare|AIC|BIC", content))
 })
 
 test_that("vignette contains simulation/uncertainty section", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   expect_true(grepl("(?i)simulation|monte carlo|uncertainty", content))
@@ -108,7 +124,7 @@ test_that("vignette contains simulation/uncertainty section", {
 })
 
 test_that("vignette references original paper", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   expect_true(grepl("(?i)hayne", content))
@@ -117,7 +133,7 @@ test_that("vignette references original paper", {
 
 # Tests for section ordering (matching Hayne paper structure)
 test_that("vignette sections follow paper order: theory before models", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
  # Theoretical framework should appear before model fitting
@@ -130,7 +146,7 @@ test_that("vignette sections follow paper order: theory before models", {
 })
 
 test_that("vignette sections follow paper order: models before results", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   # Model fitting section should appear before reserve estimates section
@@ -143,7 +159,7 @@ test_that("vignette sections follow paper order: models before results", {
 })
 
 test_that("vignette sections follow paper order: results before comparison", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   # Reserve estimates should appear before model comparison
@@ -157,7 +173,7 @@ test_that("vignette sections follow paper order: results before comparison", {
 })
 
 test_that("vignette sections follow paper order: comparison before diagnostics", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   # Model comparison should appear before residual diagnostics
@@ -170,7 +186,7 @@ test_that("vignette sections follow paper order: comparison before diagnostics",
 })
 
 test_that("five models appear in consistent order", {
-  skip_if_not(file.exists(vignette_path))
+  skip_if(is.null(vignette_path) || !file.exists(vignette_path))
   content <- paste(readLines(vignette_path), collapse = "\n")
 
   # Find positions of each model's fitting section
