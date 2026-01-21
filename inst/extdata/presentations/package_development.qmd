@@ -1,7 +1,7 @@
 ---
 title: "stochasticreserver: Journey to CRAN Readiness"
 author: "R. Mark Sharp"
-date: "January 20, 2026"
+date: "January 21, 2026"
 format:
   revealjs:
     theme: default
@@ -31,28 +31,31 @@ A **Flexible Framework for Stochastic Reserving Models**
 
 | Method | Description |
 |--------|-------------|
-| **Berquist** | Berquist-Sherman method |
+| **Berquist** | Berquist-Sherman Incremental Severity |
 | **CapeCod** | Cape Cod (Bornhuetter-Ferguson variant) |
 | **Chain** | Chain Ladder method |
-| **Hoerl** | Hoerl curve method |
-| **Wright** | Wright method |
+| **Hoerl** | Generalized Hoerl Curve with Trend |
+| **Wright** | Generalized Hoerl with Individual AY Levels |
 
 All methods share a common statistical framework using maximum likelihood
 estimation.
 
 ---
 
-## Session Goals
+## Two-Day Transformation
 
 **Transform the package for CRAN submission**
 
-Tasks accomplished:
+### Session 1 (January 20, 2026):
+- Add code quality tools (covr, lintr)
+- Write comprehensive unit tests
+- Fix all CRAN check issues
+- Add GitHub Actions CI/CD
 
-1. Add code quality tools (covr, lintr)
-2. Write comprehensive unit tests
-3. Fix all CRAN check issues
-4. Update code style to 80 character limit
-5. Commit and push changes
+### Session 2 (January 21, 2026):
+- Create TDD contract (CLAUDE.md)
+- Hayne paper reproduction vignette
+- Comprehensive lint fixes
 
 ---
 
@@ -63,8 +66,9 @@ Tasks accomplished:
 | Metric | Before | After |
 |--------|--------|-------|
 | Test Coverage | 7.23% | **98.81%** |
-| Unit Tests | 4 | **85** |
+| Unit Tests | 4 | **158** |
 | R CMD check NOTEs | 6 | **2** |
+| Lint Errors | 2,598 | **122** |
 | Line Length Limit | None | **80 chars** |
 | testthat Edition | 2 | **3** |
 | Working URLs | No | **Yes** |
@@ -99,20 +103,74 @@ abline(h = 80, col = "blue", lty = 2)
 
 ---
 
-## Comprehensive Test Suite
+## Test Suite Growth
 
-### 85 Tests Across 10 Test Files
+### 4 → 158 Tests Across Development
 
-| Test File | Tests | Coverage |
+| Milestone | Tests | Coverage |
 |-----------|-------|----------|
-| test_capecod.R | 6 | 100% |
-| test_chain.R | 9 | 100% |
-| test_hoerl.R | 8 | 100% |
-| test_wright.R | 7 | 100% |
-| test_model_description.R | 6 | 90% |
-| test_make_negative_log_likelihood.R | 3 | 100% |
-| test_make_gradient_of_objective.R | 4 | 100% |
-| test_make_log_hessian.R | 6 | 100% |
+| Initial state | 4 | 7.23% |
+| After Request 5 | 85 | 98.81% |
+| After Request 16 | 93 | 98.81% |
+| After Request 17 (TDD vignette) | **158** | 98.81% |
+
+**Test files:** 10 comprehensive test files
+
+---
+
+## TDD Contract (Session 2)
+
+### Created CLAUDE.md
+
+Strict RED/GREEN/REFACTOR phases:
+
+1. **RED Phase:** Write failing tests first
+   - No implementation code allowed
+   - Tests define requirements
+
+2. **GREEN Phase:** Minimal code to pass
+   - Only enough to make tests green
+   - No over-engineering
+
+3. **REFACTOR Phase:** Improve while green
+   - Clean up code
+   - Keep all tests passing
+
+---
+
+## Hayne Paper Vignette (TDD)
+
+### Created hayne_paper_reproduction.qmd
+
+**30 tests written FIRST** covering:
+
+- Quarto YAML header structure
+- Theoretical framework section
+- All five model sections
+- Mathematical equations (LaTeX)
+- Gradient and Hessian discussion
+- Fisher information coverage
+- Package data usage
+- Tables and figures
+- Model comparison section
+- Simulation/uncertainty analysis
+
+---
+
+## Vignette Contents
+
+### Reproduces Key Results from Hayne Paper
+
+| Section | Content |
+|---------|---------|
+| Theoretical Framework | MLE, likelihood structure |
+| Data | Table 1 triangle with proper labels |
+| Chain Ladder | Fit, parameters, reserves |
+| Cape Cod | Fit, parameters, reserves |
+| Berquist-Sherman | Fit, parameters, reserves |
+| Hoerl | Fit, parameters, reserves |
+| Wright | Fit, parameters, reserves |
+| Comparison | AIC/BIC, residuals, simulation |
 
 ---
 
@@ -138,21 +196,41 @@ abline(h = 80, col = "blue", lty = 2)
 
 ---
 
+## Lint Error Reduction
+
+### 2,598 → 122 Errors
+
+| Linter | Fixed | Remaining |
+|--------|-------|-----------|
+| assignment_linter | ✓ All | 0 |
+| brace_linter | ✓ All | 0 |
+| return_linter | ✓ All | 0 |
+| seq_linter | ✓ All | 0 |
+| line_length_linter | ✓ All | 0 |
+| object_name_linter | Intentional | 97 |
+| indentation_linter | Minor | 25 |
+
+**Note:** Remaining are mathematical notation (B0, A0, E)
+
+---
+
 ## Code Style Updates
 
-### Line Length: 120 → 80 characters
+### Changes Made
 
-Files reformatted:
-- `R/chain.R`
-- `R/make_log_hessian.R`
+- `=` → `<-` for all assignments
+- Proper brace style for if/else
+- Removed explicit `return()` statements
+- `1:length()` → `seq_along()`
+- All lines ≤ 80 characters
+- Removed trailing blank lines
 
 ### .lintr Configuration
 ```yaml
 linters: linters_with_defaults(
     line_length_linter(80),
     object_name_linter(styles = c("snake_case",
-      "symbols", "camelCase", "dotted.case")),
-    cyclocomp_linter(complexity_limit = 25)
+      "symbols", "camelCase", "dotted.case"))
   )
 ```
 
@@ -171,20 +249,6 @@ linters: linters_with_defaults(
 
 ---
 
-## README Badges Added
-
-```markdown
-[![R-CMD-check](badge)](link)
-[![R-CMD-check-scheduled](badge)](link)
-[![License: MIT](badge)](link)
-[![Lifecycle: experimental](badge)](link)
-[![codecov](badge)](link)
-```
-
-All badges link to the stochasticreserver repository.
-
----
-
 ## GitHub Actions CI/CD
 
 ### 5 Automated Workflows
@@ -196,6 +260,8 @@ All badges link to the stochasticreserver repository.
 | test-coverage | Push/PR | Codecov reporting |
 | pkgdown | Push/PR/Release | Documentation site |
 | lint | Push/PR | Code quality |
+
+**All workflows passing ✓**
 
 ---
 
@@ -241,44 +307,38 @@ All platforms must pass for merge.
 
 ---
 
-## Comprehensive Tutorial
+## Vignettes Available
 
-### All 5 Models Demonstrated
+### Three Comprehensive Guides
 
-**Tutorial includes:**
-
-- Theoretical framework from Hayne paper
-- MLE properties and Fisher information
-- All model mathematical forms
-- Reserve comparison across models
-- AIC/BIC model selection
-- Residual diagnostics
-- Monte Carlo simulation (5,000 iterations)
+| Vignette | Description |
+|----------|-------------|
+| **Comprehensive Tutorial** | All 5 models with examples |
+| **Hayne Paper Reproduction** | Full paper replication |
+| **Stochastic Reserving** | Original technical vignette |
 
 **Features:**
 
-- Code folding - click to expand code blocks
-- Linked reference to [Hayne paper](https://variancejournal.org/article/120823)
+- Code folding - click to expand
+- Mathematical equations
+- Interactive tables and plots
 
 ---
 
-## Bugs Fixed During Review
+## Bugs Fixed During Development
 
 ### Code Quality Improvements
 
 | File | Issue | Fix |
 |------|-------|-----|
-| model_description.R | Duplicate "CapeCod" condition | Changed to "Chain" |
-| berquist.R | Wrong error message text | "(size - 1)" → "(size + 1)" |
-| berquist.R | Dead code (trd = 0.01) | Commented with note |
-
-**Tests added:** 85 → 93
+| model_description.R | Duplicate "CapeCod" | Changed to "Chain" |
+| berquist.R | Wrong error message | "(size - 1)" → "(size + 1)" |
+| berquist.R | Dead code (trd) | Commented with note |
+| chain.R | Unused variable d3 | Commented with note |
 
 ---
 
-## Session Commits
-
-### 12 Commits This Session
+## Session 1 Commits (Jan 20)
 
 | Commit | Description |
 |--------|-------------|
@@ -291,15 +351,19 @@ All platforms must pass for merge.
 
 ---
 
-## Files Modified
+## Session 2 Commits (Jan 21)
 
-| Category | Files |
-|----------|-------|
-| Documentation | DESCRIPTION, LICENSE, README, NEWS |
-| R Source | chain.R, make_log_hessian.R, data.R |
-| Tests | 8 new + 2 updated |
-| Config | .lintr, .Rbuildignore |
-| Vignettes | _introduction.Rmd |
+| Commit | Description |
+|--------|-------------|
+| 92cf809 | Fix vignette path for R CMD check |
+| 9cd9aa8 | Fix vignette build for pkgdown |
+| 365e00d | Fix Table 1 formatting |
+| e9d4681 | Add vignette to lintr exclusions |
+| 85bba0b | Fix assignment_linter errors |
+| 3fcf4f7 | Fix brace, seq, return linter errors |
+| 954b13e | Fix line_length_linter errors |
+| d110e24 | Comment out unused d3 variable |
+| e873b27 | Update INTERACTIONS_LOG |
 
 ---
 
@@ -313,10 +377,13 @@ stochasticreserver/
 │   ├── make_*.R (3 files)
 │   └── model_description.R
 ├── tests/testthat/
-│   └── test_*.R (10 files)
+│   └── test_*.R (10 files, 158 tests)
 ├── vignettes/
+│   ├── comprehensive_tutorial.Rmd
+│   ├── hayne_paper_reproduction.qmd
+│   └── stochastic_reserving.Rmd
 ├── inst/extdata/presentations/
-└── DESCRIPTION, LICENSE, README
+└── DESCRIPTION, LICENSE, README, CLAUDE.md
 ```
 
 ---
@@ -327,9 +394,11 @@ stochasticreserver/
 
 ::: {.incremental}
 - **Coverage:** 7% → 99%
-- **Tests:** 4 → 85
+- **Tests:** 4 → 158
 - **NOTEs:** 6 → 2
+- **Lint Errors:** 2,598 → 122
 - **Style:** Modern R best practices
+- **TDD:** Contract established
 - **Status:** CRAN Ready
 :::
 
@@ -355,8 +424,10 @@ Hayne, R. "A Flexible Framework for Stochastic Reserving Models"
 
 ## Thank You
 
-### Session documented in:
+### Sessions documented in:
 
 `INTERACTIONS_LOG.md`
 
 All prompts and actions recorded for reproducibility.
+
+**Development approach:** Test-Driven Development (TDD)
