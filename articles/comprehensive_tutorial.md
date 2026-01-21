@@ -580,7 +580,7 @@ cat("Implied development pattern:\n")
     ## Implied development pattern:
 
 ``` r
-names(dev_pattern) <- paste0("Lag", 1:length(dev_pattern))
+names(dev_pattern) <- paste0("Lag", seq_along(dev_pattern))
 print(round(dev_pattern, 4))
 ```
 
