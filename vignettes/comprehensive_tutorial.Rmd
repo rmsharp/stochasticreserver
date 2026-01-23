@@ -23,6 +23,14 @@ knitr::opts_chunk$set(
   fig.width = 7,
   fig.height = 5
 )
+
+# Check if required packages are available
+required_pkgs <- c("mvtnorm", "MASS", "stochasticreserver")
+pkgs_available <- all(vapply(required_pkgs, requireNamespace,
+                              logical(1), quietly = TRUE))
+
+# Only evaluate code if all packages are available
+knitr::opts_chunk$set(eval = pkgs_available)
 ```
 
 ## Introduction

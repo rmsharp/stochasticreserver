@@ -13,6 +13,14 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, include = TRUE)
+
+# Check if required packages are available
+required_pkgs <- c("mvtnorm", "MASS", "abind", "stochasticreserver")
+pkgs_available <- all(vapply(required_pkgs, requireNamespace,
+                              logical(1), quietly = TRUE))
+
+# Only evaluate code if all packages are available
+knitr::opts_chunk$set(eval = pkgs_available)
 ```
 ```{r load-packages}
 library(mvtnorm)
