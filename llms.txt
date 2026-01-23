@@ -119,6 +119,12 @@ Example datasets
   : table_1_triangle is the development triangle from the reference
   article
 
+- [`RAA_incremental`](https://rmsharp.github.io/stochasticreserver/reference/RAA_incremental.md)
+  : RAA Incremental Claims Triangle
+
+- [`RAA_cumulative`](https://rmsharp.github.io/stochasticreserver/reference/RAA_cumulative.md)
+  : RAA Cumulative Claims Triangle
+
 # Articles
 
 ### Tutorials
@@ -129,6 +135,8 @@ Example datasets
   Models](https://rmsharp.github.io/stochasticreserver/articles/hayne_paper_reproduction.md):
 - [Example Stochastic
   Reserving](https://rmsharp.github.io/stochasticreserver/articles/stochastic_reserving.md):
+- [Stochastic Reserving with RAA
+  Data](https://rmsharp.github.io/stochasticreserver/articles/stochastic_reserving_RAA.md):
 
 ### Reference
 

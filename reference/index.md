@@ -76,3 +76,9 @@ Example datasets
 - [`table_1_triangle`](https://rmsharp.github.io/stochasticreserver/reference/table_1_triangle.md)
   : table_1_triangle is the development triangle from the reference
   article
+
+- [`RAA_incremental`](https://rmsharp.github.io/stochasticreserver/reference/RAA_incremental.md)
+  : RAA Incremental Claims Triangle
+
+- [`RAA_cumulative`](https://rmsharp.github.io/stochasticreserver/reference/RAA_cumulative.md)
+  : RAA Cumulative Claims Triangle

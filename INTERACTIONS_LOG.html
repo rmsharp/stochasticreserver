@@ -38,6 +38,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/comprehensive_tutorial.html">Comprehensive Tutorial</a></li>
     <li><a class="dropdown-item" href="articles/hayne_paper_reproduction.html">Hayne Paper Reproduction</a></li>
     <li><a class="dropdown-item" href="articles/stochastic_reserving.html">Example Stochastic Reserving</a></li>
+    <li><a class="dropdown-item" href="articles/stochastic_reserving_RAA.html">Stochastic Reserving with RAA Data</a></li>
     <li><a class="dropdown-item" href="articles/manual.html">Manual</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -1074,7 +1075,152 @@ Co-Authored-By: Claude Opus 4.5 &lt;noreply@anthropic.com&gt;</code></pre>
 <strong>R CMD check:</strong> 2 NOTEs only</li>
 <li>
 <strong>All GitHub Actions:</strong> Passing</li>
+</ul><hr></div>
+</div>
+<div class="section level2">
+<h2 id="session-2026-01-22">Session: 2026-01-22<a class="anchor" aria-label="anchor" href="#session-2026-01-22"></a></h2>
+<div class="section level3">
+<h3 id="request-23-add-raa-data-from-chainladder-package">Request 23: Add RAA Data from ChainLadder Package<a class="anchor" aria-label="anchor" href="#request-23-add-raa-data-from-chainladder-package"></a></h3>
+<p><strong>Prompt:</strong> Pull data set from ChainLadder R package</p>
+<p><strong>Actions Completed:</strong></p>
+<div class="section level4">
+<h4 id="id_1-explored-chainladder-package-datasets">1. Explored ChainLadder Package Datasets<a class="anchor" aria-label="anchor" href="#id_1-explored-chainladder-package-datasets"></a></h4>
+<p>Available datasets: ABC, AutoBI, GenIns, M3IR5, MCLpaid, MCLincurred, MW2008, MW2014, MedMal, Mortgage, RAA, UKMotor, USAApaid, USAAincurred, auto, liab, qpaid, qincurred</p>
+</div>
+<div class="section level4">
+<h4 id="id_2-selected-raa-reinsurance-association-of-america">2. Selected RAA (Reinsurance Association of America)<a class="anchor" aria-label="anchor" href="#id_2-selected-raa-reinsurance-association-of-america"></a></h4>
+<p>Classic 10x10 triangle commonly used in actuarial literature: - Origin years: 1981-1990 - Development periods: 1-10 - Values: Paid claims in thousands of dollars</p>
+</div>
+<div class="section level4">
+<h4 id="id_3-created-data-files">3. Created Data Files<a class="anchor" aria-label="anchor" href="#id_3-created-data-files"></a></h4>
+<table class="table"><colgroup><col width="32%"><col width="46%"><col width="21%"></colgroup><thead><tr class="header"><th>Dataset</th>
+<th>Description</th>
+<th>File</th>
+</tr></thead><tbody><tr class="odd"><td>RAA_incremental</td>
+<td>Incremental claims matrix</td>
+<td>data/RAA_incremental.rda</td>
+</tr><tr class="even"><td>RAA_cumulative</td>
+<td>Cumulative claims matrix</td>
+<td>data/RAA_cumulative.rda</td>
+</tr></tbody></table></div>
+<div class="section level4">
+<h4 id="id_4-added-documentation-with-proper-attribution">4. Added Documentation with Proper Attribution<a class="anchor" aria-label="anchor" href="#id_4-added-documentation-with-proper-attribution"></a></h4>
+<p>Updated <code>R/data.R</code> with full roxygen documentation including: - Data format and structure - Source attribution to ChainLadder package - Full citation: Gesmann M, Murphy D, Zhang Y, et al. (2025) - Cross-references between incremental and cumulative versions - Example code for conversion</p>
+</div>
+<div class="section level4">
+<h4 id="id_5-generated-documentation">5. Generated Documentation<a class="anchor" aria-label="anchor" href="#id_5-generated-documentation"></a></h4>
+<ul><li><code>man/RAA_incremental.Rd</code></li>
+<li><code>man/RAA_cumulative.Rd</code></li>
+</ul><p><strong>Usage:</strong></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">stochasticreserver</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">RAA_incremental</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">RAA_cumulative</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Commits:</strong> - <code>18af235</code> - Add RAA triangle data from ChainLadder package - <code>2082477</code> - Update documentation formatting (line wrapping)</p>
+<p><strong>All 158 tests pass.</strong></p>
+<p><strong>Status:</strong> Completed</p>
+<hr></div>
+</div>
+<div class="section level3">
+<h3 id="request-24-organize-background-documents">Request 24: Organize Background Documents<a class="anchor" aria-label="anchor" href="#request-24-organize-background-documents"></a></h3>
+<p><strong>Prompt:</strong> Commit intentional changes (deleted Appendix_G_R-Example.R and new background_documents/ folder)</p>
+<p><strong>Actions Completed:</strong></p>
+<div class="section level4">
+<h4 id="file-organization">File Organization:<a class="anchor" aria-label="anchor" href="#file-organization"></a></h4>
+<ul><li>Moved <code>inst/extdata/Appendix_G_R-Example.R</code> to <code>inst/extdata/background_documents/</code>
+</li>
+<li>Added Hayne paper PDF to <code>inst/extdata/background_documents/</code>
+</li>
 </ul></div>
+<div class="section level4">
+<h4 id="background-documents-contents">Background Documents Contents:<a class="anchor" aria-label="anchor" href="#background-documents-contents"></a></h4>
+<table class="table"><thead><tr class="header"><th>File</th>
+<th>Description</th>
+</tr></thead><tbody><tr class="odd"><td>Appendix_G_R-Example.R</td>
+<td>Original R code from Hayne paper appendix</td>
+</tr><tr class="even"><td>A Flexible Framework…pdf</td>
+<td>Full Hayne paper from Variance journal</td>
+</tr></tbody></table><p><strong>Commit:</strong> <code>351dcbb</code> - Move Appendix G example to background_documents, add Hayne paper PDF</p>
+<p><strong>Status:</strong> Completed</p>
+<hr></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="session-3-summary-january-22-2026">Session 3 Summary (January 22, 2026)<a class="anchor" aria-label="anchor" href="#session-3-summary-january-22-2026"></a></h2>
+<div class="section level3">
+<h3 id="requests-completed-23-24">Requests Completed: 23-24<a class="anchor" aria-label="anchor" href="#requests-completed-23-24"></a></h3>
+<table class="table"><thead><tr class="header"><th>Request</th>
+<th>Description</th>
+<th>Commit</th>
+</tr></thead><tbody><tr class="odd"><td>23</td>
+<td>Add RAA data from ChainLadder</td>
+<td>18af235, 2082477</td>
+</tr><tr class="even"><td>24</td>
+<td>Organize background documents</td>
+<td>351dcbb</td>
+</tr></tbody></table></div>
+<div class="section level3">
+<h3 id="new-data-added">New Data Added:<a class="anchor" aria-label="anchor" href="#new-data-added"></a></h3>
+<ul><li>
+<code>RAA_incremental</code> - 10x10 incremental claims triangle</li>
+<li>
+<code>RAA_cumulative</code> - 10x10 cumulative claims triangle</li>
+</ul></div>
+<div class="section level3">
+<h3 id="package-state">Package State:<a class="anchor" aria-label="anchor" href="#package-state"></a></h3>
+<ul><li>
+<strong>Tests:</strong> 158 passing</li>
+<li>
+<strong>Datasets:</strong> B0, A0, dnom, table_1_triangle, RAA_incremental, RAA_cumulative</li>
+<li>
+<strong>All GitHub Actions:</strong> Expected to pass</li>
+</ul><hr></div>
+<div class="section level3">
+<h3 id="request-25-create-raa-stochastic-reserving-vignette">Request 25: Create RAA Stochastic Reserving Vignette<a class="anchor" aria-label="anchor" href="#request-25-create-raa-stochastic-reserving-vignette"></a></h3>
+<p><strong>Prompt:</strong> Use RAA_cumulative data instead of B0 in a parallel Quarto document</p>
+<p><strong>Actions Completed:</strong></p>
+<div class="section level4">
+<h4 id="id_1-created-new-vignette">1. Created New Vignette<a class="anchor" aria-label="anchor" href="#id_1-created-new-vignette"></a></h4>
+<p>Created <code>vignettes/stochastic_reserving_RAA.qmd</code> paralleling the original <code>stochastic_reserving.Rmd</code> but using RAA data:</p>
+<table class="table"><thead><tr class="header"><th>Feature</th>
+<th>Original</th>
+<th>RAA Version</th>
+</tr></thead><tbody><tr class="odd"><td>Data source</td>
+<td>Hayne paper (B0)</td>
+<td>ChainLadder (RAA_cumulative)</td>
+</tr><tr class="even"><td>Format</td>
+<td>R Markdown</td>
+<td>Quarto</td>
+</tr><tr class="odd"><td>Exposure data</td>
+<td>dnom (39K-49K)</td>
+<td>Uniform (1)</td>
+</tr><tr class="even"><td>Values</td>
+<td>Average per exposure</td>
+<td>Total claims (thousands)</td>
+</tr></tbody></table></div>
+<div class="section level4">
+<h4 id="id_2-key-adaptations">2. Key Adaptations<a class="anchor" aria-label="anchor" href="#id_2-key-adaptations"></a></h4>
+<ul><li>Uses <code>RAA_cumulative</code> instead of hardcoded B0 matrix</li>
+<li>Sets <code>dnom &lt;- rep(1, nrow(B0))</code> since RAA lacks exposure data</li>
+<li>Models total claims rather than average claims per exposure</li>
+<li>Added proper ChainLadder package attribution</li>
+<li>Quarto format with code folding and table of contents</li>
+</ul></div>
+<div class="section level4">
+<h4 id="id_3-updated-pkgdown-configuration-1">3. Updated pkgdown Configuration<a class="anchor" aria-label="anchor" href="#id_3-updated-pkgdown-configuration-1"></a></h4>
+<ul><li>Added vignette to navbar menu</li>
+<li>Added to articles section</li>
+<li>Added RAA_incremental and RAA_cumulative to Data reference section</li>
+</ul></div>
+<div class="section level4">
+<h4 id="id_4-verified-rendering">4. Verified Rendering<a class="anchor" aria-label="anchor" href="#id_4-verified-rendering"></a></h4>
+<ul><li>Vignette renders successfully with Chain Ladder model</li>
+<li>All 158 tests continue to pass</li>
+</ul><p><strong>Files Created:</strong> - <code>vignettes/stochastic_reserving_RAA.qmd</code></p>
+<p><strong>Files Modified:</strong> - <code>_pkgdown.yml</code> - Added new vignette and RAA data references</p>
+<p><strong>Status:</strong> Completed</p>
+</div>
+</div>
 </div>
 </div>
 

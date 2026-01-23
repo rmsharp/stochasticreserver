@@ -24,7 +24,7 @@ chain(B0, paid_to_date, upper_triangle_mask)
 
 - paid_to_date:
 
-  numeric vector of length `size`. It is the lower diagnal of the
+  numeric vector of length `size`. It is the lower diagonal of the
   development triangle in row order. It represents the amount paid to
   date.
 

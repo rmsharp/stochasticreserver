@@ -8,6 +8,8 @@
   Models](https://rmsharp.github.io/stochasticreserver/articles/hayne_paper_reproduction.md):
 - [Example Stochastic
   Reserving](https://rmsharp.github.io/stochasticreserver/articles/stochastic_reserving.md):
+- [Stochastic Reserving with RAA
+  Data](https://rmsharp.github.io/stochasticreserver/articles/stochastic_reserving_RAA.md):
 
 ### Reference
 
