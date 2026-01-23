@@ -24,9 +24,9 @@ denominator}
 -   m_expected_value is the expectated value matrix
 -   m_variance is the matrix of variances
 -   A, m_expected_value, m_variance all have shape c(size, size)
--   The variables _v are copies of the originals to shape c(npar,size,size),
-paralleling the gradient of g.
+-   The variables _v are copies of the originals to shape
+    c(npar,size,size), paralleling the gradient of g.
 -   The variables _m are copies of the originals to shape
-c(npar,npar,size,size), paralleling the hessian of g
+    c(npar,npar,size,size), paralleling the hessian of g
 hessian-of-objective-function
 }
