@@ -1235,29 +1235,6 @@ add Hayne paper PDF
 
 ------------------------------------------------------------------------
 
-## Session 3 Summary (January 22, 2026)
-
-### Requests Completed: 23-24
-
-| Request | Description                   | Commit           |
-|---------|-------------------------------|------------------|
-| 23      | Add RAA data from ChainLadder | 18af235, 2082477 |
-| 24      | Organize background documents | 351dcbb          |
-
-### New Data Added:
-
-- `RAA_incremental` - 10x10 incremental claims triangle
-- `RAA_cumulative` - 10x10 cumulative claims triangle
-
-### Package State:
-
-- **Tests:** 158 passing
-- **Datasets:** B0, A0, dnom, table_1_triangle, RAA_incremental,
-  RAA_cumulative
-- **All GitHub Actions:** Expected to pass
-
-------------------------------------------------------------------------
-
 ### Request 25: Create RAA Stochastic Reserving Vignette
 
 **Prompt:** Use RAA_cumulative data instead of B0 in a parallel Quarto
@@ -1301,4 +1278,88 @@ original `stochastic_reserving.Rmd` but using RAA data:
 **Files Modified:** - `_pkgdown.yml` - Added new vignette and RAA data
 references
 
+**Commit:** `7eb5cc1` - Add stochastic reserving vignette using RAA data
+
 **Status:** Completed
+
+------------------------------------------------------------------------
+
+### Request 26: Fix GitHub Actions Failures
+
+**Prompt:** Check GitHub Actions
+
+**Issues Identified:**
+
+1.  **Windows checkout failure:** PDF filename contained pipe character
+    (`|`) which is invalid on Windows file systems
+2.  **Vignette build failure:** Required packages not available during R
+    CMD check caused [`library()`](https://rdrr.io/r/base/library.html)
+    calls to fail
+
+**Actions Completed:**
+
+#### 1. Fixed PDF Filename for Windows Compatibility
+
+Renamed file in `inst/extdata/background_documents/`: - **Old:**
+`A Flexible Framework for Stochastic Reserving Models | Published in Variance.pdf` -
+**New:** `Hayne_Flexible_Framework_Stochastic_Reserving.pdf`
+
+**Commit:** `ece45d6` - Rename PDF to fix Windows compatibility
+
+#### 2. Added Package Availability Checks to Vignettes
+
+Added setup code to skip evaluation when packages unavailable:
+
+``` r
+required_pkgs <- c("mvtnorm", "MASS", "stochasticreserver")
+pkgs_available <- all(vapply(required_pkgs, requireNamespace,
+                              logical(1), quietly = TRUE))
+knitr::opts_chunk$set(eval = pkgs_available)
+```
+
+**Vignettes updated:** - `vignettes/stochastic_reserving_RAA.qmd` -
+`vignettes/comprehensive_tutorial.Rmd` -
+`vignettes/stochastic_reserving.Rmd`
+
+**Commit:** `81fc902` - Add package availability checks to vignettes
+
+#### Final GitHub Actions Status:
+
+| Workflow               | Status     |
+|------------------------|------------|
+| R-CMD-check            | ✅ Success |
+| test-coverage          | ✅ Success |
+| lint                   | ✅ Success |
+| pkgdown                | ✅ Success |
+| pages-build-deployment | ✅ Success |
+
+**Status:** Completed
+
+------------------------------------------------------------------------
+
+## Session 3 Summary (January 22, 2026)
+
+### Requests Completed: 23-26
+
+| Request | Description                              | Commit(s)        |
+|---------|------------------------------------------|------------------|
+| 23      | Add RAA data from ChainLadder            | 18af235, 2082477 |
+| 24      | Organize background documents            | f9558f2          |
+| 25      | Create RAA stochastic reserving vignette | 7eb5cc1          |
+| 26      | Fix GitHub Actions failures              | ece45d6, 81fc902 |
+
+### New Assets:
+
+- `RAA_incremental` - 10x10 incremental claims triangle
+- `RAA_cumulative` - 10x10 cumulative claims triangle
+- `vignettes/stochastic_reserving_RAA.qmd` - RAA data vignette
+- `inst/extdata/background_documents/` - Reference materials
+
+### Final Package State:
+
+- **Tests:** 158 passing
+- **Datasets:** 6 (B0, A0, dnom, table_1_triangle, RAA_incremental,
+  RAA_cumulative)
+- **Vignettes:** 5 (comprehensive_tutorial, hayne_paper_reproduction,
+  stochastic_reserving, stochastic_reserving_RAA, manual)
+- **All GitHub Actions:** Passing

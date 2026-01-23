@@ -7,7 +7,7 @@ articles:
   manual: manual.html
   stochastic_reserving_RAA: stochastic_reserving_RAA.html
   stochastic_reserving: stochastic_reserving.html
-last_built: 2026-01-23T03:33Z
+last_built: 2026-01-23T03:44Z
 urls:
   reference: https://rmsharp.github.io/stochasticreserver/reference
   article: https://rmsharp.github.io/stochasticreserver/articles
