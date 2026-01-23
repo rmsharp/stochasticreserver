@@ -62,6 +62,8 @@ navbar:
         href: articles/hayne_paper_reproduction.html
       - text: Example Stochastic Reserving
         href: articles/stochastic_reserving.html
+      - text: Stochastic Reserving with RAA Data
+        href: articles/stochastic_reserving_RAA.html
       - text: Manual
         href: articles/manual.html
 
@@ -72,6 +74,7 @@ articles:
   - comprehensive_tutorial
   - hayne_paper_reproduction
   - stochastic_reserving
+  - stochastic_reserving_RAA
 - title: Reference
   contents:
   - manual
@@ -103,3 +106,5 @@ reference:
   - A0
   - dnom
   - table_1_triangle
+  - RAA_incremental
+  - RAA_cumulative

@@ -1155,3 +1155,45 @@ Hayne paper PDF
 - **Tests:** 158 passing
 - **Datasets:** B0, A0, dnom, table_1_triangle, RAA_incremental, RAA_cumulative
 - **All GitHub Actions:** Expected to pass
+
+---
+
+### Request 25: Create RAA Stochastic Reserving Vignette
+**Prompt:** Use RAA_cumulative data instead of B0 in a parallel Quarto document
+
+**Actions Completed:**
+
+#### 1. Created New Vignette
+Created `vignettes/stochastic_reserving_RAA.qmd` paralleling the original
+`stochastic_reserving.Rmd` but using RAA data:
+
+| Feature | Original | RAA Version |
+|---------|----------|-------------|
+| Data source | Hayne paper (B0) | ChainLadder (RAA_cumulative) |
+| Format | R Markdown | Quarto |
+| Exposure data | dnom (39K-49K) | Uniform (1) |
+| Values | Average per exposure | Total claims (thousands) |
+
+#### 2. Key Adaptations
+- Uses `RAA_cumulative` instead of hardcoded B0 matrix
+- Sets `dnom <- rep(1, nrow(B0))` since RAA lacks exposure data
+- Models total claims rather than average claims per exposure
+- Added proper ChainLadder package attribution
+- Quarto format with code folding and table of contents
+
+#### 3. Updated pkgdown Configuration
+- Added vignette to navbar menu
+- Added to articles section
+- Added RAA_incremental and RAA_cumulative to Data reference section
+
+#### 4. Verified Rendering
+- Vignette renders successfully with Chain Ladder model
+- All 158 tests continue to pass
+
+**Files Created:**
+- `vignettes/stochastic_reserving_RAA.qmd`
+
+**Files Modified:**
+- `_pkgdown.yml` - Added new vignette and RAA data references
+
+**Status:** Completed
