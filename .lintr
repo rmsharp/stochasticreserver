@@ -7,7 +7,7 @@ exclude: "# nolint"
 exclude_start: "# nolint start"
 exclude_end: "# nolint end"
 exclusions: list(
-    "inst/extdata/Appendix_G_R-Example.R",
+    "inst/extdata/background_documents/Appendix_G_R-Example.R",
     "inst/extdata/presentations",
     "vignettes/stochastic_reserving.Rmd",
     "vignettes/hayne_paper_reproduction.qmd"
